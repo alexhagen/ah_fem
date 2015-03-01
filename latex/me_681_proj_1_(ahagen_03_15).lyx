@@ -82,14 +82,251 @@ March 10, 2015
 \end_layout
 
 \begin_layout Part*
-Part 1
-\end_layout
-
-\begin_layout Section*
-Section 1
+Problem 1
 \end_layout
 
 \begin_layout Standard
+Consider the heat conduction problem of the square plate with only Dirichlet
+ boundary conditions prescribed (
+\begin_inset Formula $\left.T\right|_{\left(-b,y\right)}=0$
+\end_inset
+
+, 
+\begin_inset Formula $\left.T\right|_{\left(b,y\right)}=1$
+\end_inset
+
+, 
+\begin_inset Formula $s\left(x,y\right)=0$
+\end_inset
+
+, 
+\begin_inset Formula $k\left(x,y\right)=1$
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Section*
+Analytical Solution
+\end_layout
+
+\begin_layout Standard
+The steady state heat equation (Poisson's equation) is given in one dimension
+ as
+\begin_inset Formula 
+\[
+\frac{d}{dx}k\frac{d}{dx}T+\cancelto{0}{s}=0
+\]
+
+\end_inset
+
+.
+ Differentiating twice, we have
+\begin_inset Formula 
+\[
+k\frac{d}{dx}T=c_{1}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+T=\frac{c_{1}}{k}x+c_{2}
+\]
+
+\end_inset
+
+and applying the Dirichlet boundary conditions on both sides, we have
+\begin_inset Formula 
+\[
+\left.T\right|_{\left(-b,y\right)}=0=-\frac{c_{1}}{k}b+c_{2}
+\]
+
+\end_inset
+
+, so
+\begin_inset Formula 
+\[
+c_{2}=\frac{c_{1}}{k}b
+\]
+
+\end_inset
+
+, and
+\begin_inset Formula 
+\[
+\left.T\right|_{\left(b,y\right)}=1=\frac{c_{1}}{k}b+c_{2}
+\]
+
+\end_inset
+
+, so
+\begin_inset Formula 
+\[
+1=\frac{c_{1}}{k}b+\frac{c_{1}}{k}b
+\]
+
+\end_inset
+
+, therefore
+\begin_inset Formula 
+\[
+c_{1}=\frac{k}{2b}
+\]
+
+\end_inset
+
+, and 
+\begin_inset Formula 
+\[
+c_{2}=\frac{\frac{k}{2b}b}{k}=\frac{1}{2}
+\]
+
+\end_inset
+
+, which gives us the final result of
+\begin_inset Formula 
+\[
+T=\frac{x}{2b}+\frac{1}{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Part*
+Problem 2
+\end_layout
+
+\begin_layout Standard
+Consider the heat conduction problem of a square plate with a constant heat
+ source, Dirichlet boundary conditions, and neumann boundary conditions
+ (
+\begin_inset Formula $\left.T\right|_{\left(-b,y\right)}=0$
+\end_inset
+
+, 
+\begin_inset Formula $\left.\overline{q}\right|_{\left(b,y\right)}=-2$
+\end_inset
+
+, 
+\begin_inset Formula $s\left(x,y\right)=2$
+\end_inset
+
+, 
+\begin_inset Formula $k\left(x,y\right)=1$
+\end_inset
+
+).
+ Assume that temperature is a function of only 
+\begin_inset Formula $x$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Section*
+Analytical Solution
+\end_layout
+
+\begin_layout Standard
+The steady state heat equation (Poisson's equation) is given in one dimension
+ as
+\begin_inset Formula 
+\[
+\frac{d}{dx}k\frac{d}{dx}T+s=0
+\]
+
+\end_inset
+
+.
+ Differentiating once, we have
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+k\frac{d}{dx}T=-sx+c_{1}
+\]
+
+\end_inset
+
+, and using the definition of heat flux in one dimension as
+\begin_inset Formula 
+\[
+q=-k\frac{d}{dx}T
+\]
+
+\end_inset
+
+, we can use the Neumann boundary condition to determine 
+\begin_inset Formula $c_{1}$
+\end_inset
+
+, with
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+-\left.\overline{q}\right|_{b}=-2=-sx+c_{1}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+c_{1}=sb-\overline{q}=2b+2
+\]
+
+\end_inset
+
+, so 
+\begin_inset Formula 
+\[
+k\frac{d}{dx}T=-sx+2b+2
+\]
+
+\end_inset
+
+, and differentiating
+\begin_inset Formula 
+\[
+T=-\frac{s}{2k}x^{2}+\left(\frac{2b}{k}+\frac{2}{k}\right)x+c_{2}
+\]
+
+\end_inset
+
+, using the Dirichlet boundary condition, we have
+\begin_inset Formula 
+\[
+\left.T\right|_{\left(-b,y\right)}=0=-\frac{s}{2k}b^{2}+\left(\frac{2b}{k}+\frac{2}{k}\right)b+c_{2}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+c_{2}=\frac{s}{2k}b^{2}-\left(\frac{2b}{k}+\frac{2}{k}\right)b
+\]
+
+\end_inset
+
+and finally
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+T=\frac{-s}{2k}x^{2}+\left(\frac{2b}{k}+\frac{2}{k}\right)x+\frac{s}{2k}b^{2}-\left(\frac{2b}{k}+\frac{2}{k}\right)b=\left(\frac{s}{2k}-\frac{2b}{k}-\frac{2}{k}\right)\left(b-x\right)
+\]
+
+\end_inset
+
 
 \end_layout
 
