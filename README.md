@@ -40,19 +40,19 @@ x = [ 5 5 5 5 ];
       * Moderate Quadrilateral Mesh Density ( [`sq_quad_mod_dirbc.inp`](inp/sq_quad_mod_dirbc.inp) )
       * Moderate Triangular Mesh Density ( [`sq_tri_mod_dirbc.inp`](inp/sq_tri_mod_dirbc.inp) )
     2. Square Region with Dirichlet and Neumann boundary conditions
-      * Low Mesh Quadrilateral Density ( [`sq_quad_low_dirneubc.inp`](link) )
-      * Low Mesh Triangular Density ( [`sq_tri_low_dirneubc.inp`](link) )
-      * Moderate Quadrilateral Mesh Density ( [`sq_quad_mod_dirneubc.inp`](link) )
-      * Moderate Triangular Mesh Density ( [`sq_tri_mod_dirneubc.inp`](link) )
-      * High Quadrilateral Mesh Density ( [`sq_quad_high_dirneubc.inp`](link) )
-      * High Triangular Mesh Density ( [`sq_tri_high_dirneubc.inp`](link) )
+      * Low Mesh Quadrilateral Density ( [`sq_quad_low_dirneubc.inp`](inp/sq_quad_low_dirneubc.inp) )
+      * Low Mesh Triangular Density ( [`sq_tri_low_dirneubc.inp`](inp/sq_tri_low_dirneubc.inp) )
+      * Moderate Quadrilateral Mesh Density ( [`sq_quad_mod_dirneubc.inp`](inp/sq_quad_mod_dirneubc.inp) )
+      * Moderate Triangular Mesh Density ( [`sq_tri_mod_dirneubc.inp`](inp/sq_tri_mod_dirneubc.inp) )
+      * High Quadrilateral Mesh Density ( [`sq_quad_high_dirneubc.inp`](inp/sq_quad_high_dirneubc.inp) )
+      * High Triangular Mesh Density ( [`sq_tri_high_dirneubc.inp`](inp/sq_tri_high_dirneubc.inp) )
     3. Square Region with Hole
-      * Low Mesh Quadrilateral Density ( [`sqhole_quad_low_dirneubc.inp`](link) )
-      * Low Mesh Triangular Density ( [`sqhole_tri_low_dirneubc.inp`](link) )
-      * Moderate Quadrilateral Mesh Density ( [`sqhole_quad_mod_dirneubc.inp`](link) )
-      * Moderate Triangular Mesh Density ( [`sqhole_tri_mod_dirneubc.inp`](link) )
-      * High Quadrilateral Mesh Density ( [`sqhole_quad_high_dirneubc.inp`](link) )
-      * High Triangular Mesh Density ( [`sqhole_tri_high_dirneubc.inp`](link) )
+      * Low Mesh Quadrilateral Density ( [`sqhole_quad_low_dirneubc.inp`](inp/sqhole_quad_low_dirneubc.inp) )
+      * Low Mesh Triangular Density ( [`sqhole_tri_low_dirneubc.inp`](inp/sqhole_tri_low_dirneubc.inp) )
+      * Moderate Quadrilateral Mesh Density ( [`sqhole_quad_mod_dirneubc.inp`](inp/sqhole_quad_mod_dirneubc.inp) )
+      * Moderate Triangular Mesh Density ( [`sqhole_tri_mod_dirneubc.inp`](inp/sqhole_tri_mod_dirneubc.inp) )
+      * High Quadrilateral Mesh Density ( [`sqhole_quad_high_dirneubc.inp`](inp/sqhole_quad_high_dirneubc.inp) )
+      * High Triangular Mesh Density ( [`sqhole_tri_high_dirneubc.inp`](inp/sqhole_tri_high_dirneubc.inp) )
   2.  Use MATLAB and provided template files to import these meshes
 
 
@@ -60,7 +60,7 @@ x = [ 5 5 5 5 ];
 
 ### Discussion
 
-Discussion can be found in [link](something)
+Discussion can be found in [inp/](something)
 
 ## Improvement and To-Do
 
