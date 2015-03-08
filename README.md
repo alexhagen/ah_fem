@@ -35,7 +35,7 @@ x = [ 5 5 5 5 ];
 ## Procedure
 
 1. Mesh Creation
-  A.  Use Abaqus to create meshes and export to `*.inp` files
+  1.  Use Abaqus to create meshes and export to `*.inp` files
     1. Square Region with Dirichlet only boundary conditions
       * Moderate Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
       * Moderate Triangular Mesh Density ( [`sqdirbc.inp`](link) )
@@ -53,7 +53,7 @@ x = [ 5 5 5 5 ];
       * Moderate Triangular Mesh Density ( [`sqdirbc.inp`](link) )
       * High Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
       * High Triangular Mesh Density ( [`sqdirbc.inp`](link) )
-  B.  Use MATLAB and provided template files to import these meshes
+  2.  Use MATLAB and provided template files to import these meshes
 
 
 ## Discussion and Report
