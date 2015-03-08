@@ -34,7 +34,7 @@ x = [ 5 5 5 5 ];
 
 ## Procedure
 
-I. Mesh Creation
+1. Mesh Creation
   A.  Use Abaqus to create meshes and export to `*.inp` files
     1. Square Region with Dirichlet only boundary conditions
       * Moderate Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
