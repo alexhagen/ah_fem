@@ -29,9 +29,36 @@ Follow the below steps to use the code:
 ```matlab
 
 x = [ 5 5 5 5 ];
+
 ```
 
+## Procedure
+
+I. Mesh Creation
+  A.  Use Abaqus to create meshes and export to `*.inp` files
+    1. Square Region with Dirichlet only boundary conditions
+      * Moderate Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
+      * Moderate Triangular Mesh Density ( [`sqdirbc.inp`](link) )
+    2. Square Region with Dirichlet and Neumann boundary conditions
+      * Low Mesh Quadrilateral Density ( [`sqdirbc.inp`](link) )
+      * Low Mesh Triangular Density ( [`sqdirbc.inp`](link) )
+      * Moderate Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
+      * Moderate Triangular Mesh Density ( [`sqdirbc.inp`](link) )
+      * High Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
+      * High Triangular Mesh Density ( [`sqdirbc.inp`](link) )
+    3. Square Region with Hole
+      * Low Mesh Quadrilateral Density ( [`sqdirbc.inp`](link) )
+      * Low Mesh Triangular Density ( [`sqdirbc.inp`](link) )
+      * Moderate Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
+      * Moderate Triangular Mesh Density ( [`sqdirbc.inp`](link) )
+      * High Quadrilateral Mesh Density ( [`sqdirbc.inp`](link) )
+      * High Triangular Mesh Density ( [`sqdirbc.inp`](link) )
+  B.  Use MATLAB and provided template files to import these meshes
+
+
 ## Discussion and Report
+
+### Discussion
 
 Discussion can be found in [link](something)
 
