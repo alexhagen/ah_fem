@@ -9,31 +9,64 @@
 %-------------------------------------------------------------------------%
 
 function me681_heatconduction_project()
-    %%% change this and add your name 
-    %%% replace any spaces , dots in  your name with an underscore 
-    %%% John Doe becomes John_Doe
+    %% Project Initialization
+    % Input names
     disp('This project was done by')
-    student_name = 'your name here';
+    student_name = 'Alex_Hagen';
     disp(student_name)
     
-    %%% Creates a directory with your name .
+    % Creates a directory with your name .
     if (~exist(student_name,'dir'))
-       % Command under Window
-       system(['md', student_name]);
-       % Command under MacOS
-       % system(['mkdir ',student_name]);
+       % Command under Windows
+       system(['md ', student_name]);
     end
     
-    %%% the rest of your code for the code evaluation part goes 
-    %%% here. 
-    %%% Make sure things are commented. 
+    %% Problem 1q - Quadrilateral Element
+    % use the fem function to import the mesh file from abaqus, construct
+    % the stiffness matrix, apply the boundary conditions, assemble into a
+    % global matrix, solve for the temperature, and then determine the flux
+    % at all mesh points
+    filename = 'sq_quad_mod_dirbc';
+    [T,qpp] = fem(['inp/' filename '.inp']);
+    % determine the temperature distribution and flux from the analytical
+    % solution for this problem
+    [T_exact,qpp_exact] = exact('sq_dirbc');
+    % compare the approximate solution to the exact solution
     
+    % plot the requested plots
+    plot_T(T,filename);
+    plot_q(qpp,filename);
+    %% Problem 1t - Triangular Element
+    % use the fem function to import the mesh file from abaqus, construct
+    % the stiffness matrix, apply the boundary conditions, assemble into a
+    % global matrix, solve for the temperature, and then determine the flux
+    % at all mesh points
+    filename = 'sq_tri_mod_dirbc';
+    [T,qpp] = fem(['inp/' filename '.inp']);
+    % determine the temperature distribution and flux from the analytical
+    % solution for this problem
+    [T_exact,qpp_exact] = exact('sq_dirbc');
+    % compare the approximate solution to the exact solution
     
+    % plot the requested plots
+    plot_T(T,filename);
+    plot_q(qpp,filename);
     
+    %% Problem 2ql - Quadrilateral Low Density Element
+    % use the fem function to import the mesh file from abaqus, construct
+    % the stiffness matrix, apply the boundary conditions, assemble into a
+    % global matrix, solve for the temperature, and then determine the flux
+    % at all mesh points
+    filename = 'sq_quad_mod_dirbc';
+    [T,qpp] = fem(['inp/' filename '.inp']);
+    % determine the temperature distribution and flux from the analytical
+    % solution for this problem
+    [T_exact,qpp_exact] = exact('sq_dirneubc');
+    % compare the approximate solution to the exact solution
     
+    % plot the requested plots and save to a file
+    plot_T(T,filename);
+    plot_q(qpp,filename);
     
-    %%% Make sure that any figures that your code outputs are saved to your directory    
-    %%% For example, prob1_temperature.png should be saved to
-    %%% 'student_name/prob1_temperature.png'
     
 end
