@@ -5,7 +5,8 @@ function [T,qpp]=fem(filename)
     % import conductivity from the file
     k = readinp('*Conductivity',filename);
     % import Temperature boundary conditions
-    %boundary = readinp('*Boundary',filename)
+    bcf = import_bcf(filename,mesh);
+    %{
     %% Construction of stiffness matrix
     % allocate a structure to hold all of the elemental stiffness matrices
     for n = 1:mesh.n_el
@@ -36,7 +37,6 @@ function [T,qpp]=fem(filename)
             end
         end
     end
-    %{
     %% Applying Neumman BC
     %% Applying Dirichlet BC
     %% Assembly

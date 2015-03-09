@@ -26,7 +26,7 @@ function me681_heatconduction_project()
     % the stiffness matrix, apply the boundary conditions, assemble into a
     % global matrix, solve for the temperature, and then determine the flux
     % at all mesh points
-    filename = 'sqhole_quad_mod_dirneubc';
+    filename = 'sq_quad_mod_dirbc';
     [T,qpp] = fem(['inp/' filename '.inp']);
     %{
     % determine the temperature distribution and flux from the analytical
