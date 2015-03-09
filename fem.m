@@ -9,7 +9,7 @@ function [T,qpp]=fem(filename)
     %% Import of sources from file specified by filename
     %% Construction of stiffness matrix
     % allocate a structure to hold all of the elemental stiffness matrices
-    for n = [1:mesh.n_el]
+    for n = 1:mesh.n_el
         % preallocate the stiffness and forcing matrices
         K_el = zeros(mesh.elements(n).n_nodes,mesh.elements(n).n_nodes);
         f_omega_el = zeros(mesh.elements(n).n_nodes,1);

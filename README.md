@@ -53,8 +53,8 @@ x = [ 5 5 5 5 ];
       * Moderate Triangular Mesh Density ( [`sqhole_tri_mod_dirneubc.inp`](inp/sqhole_tri_mod_dirneubc.inp) )
       * High Quadrilateral Mesh Density ( [`sqhole_quad_high_dirneubc.inp`](inp/sqhole_quad_high_dirneubc.inp) )
       * High Triangular Mesh Density ( [`sqhole_tri_high_dirneubc.inp`](inp/sqhole_tri_high_dirneubc.inp) )
-  2.  Use MATLAB and provided template files to import these meshes ( [`import_mesh.m`](import_mesh.m))
-  	1.  Creation of a `struct` which has the following layout:
+  2.  Importing the mesh element structure and their correlation to the global locations ( [`import_mesh.m`](import_mesh.m))
+  	1.  Creation of a `struct` for the elements which has the following layout:
 
   	```
 	                         +--------+                                       
@@ -99,6 +99,31 @@ x = [ 5 5 5 5 ];
 	2. Import of values for each element into the structure array using `readinp.m`
 	3. Plotting of the mesh for visual confirmation of correct import
 	![sample figure from mesh confirmation](img/mesh_confirmation_example.png)
+  3.  Importing the boundary and body conditions and where they are applied throughout the model
+  	1. Creation of a `struct` for the boundary conditions which has the following layout:
+
+  	```
+  	```
+
+  	2. Import of values for the boundary conditions and source conditions using `readinp.m`
+  	3. Plotting of b.c. on top of previous mesh figure for visual confirmation of correct import
+  	![sample figure from bc/bf confirmation](img/bcbf_confirmation_example.png)
+2. Creation of the stiffness matrix for each element
+  1. something
+  2. something
+3. Creation of the forcing vectors for each element
+  1. something
+  2. something
+4. Assembly of the elemental matrices and vectors into the global stiffness matrix and forcing vectors
+  1. something
+  2. something
+5. Solution of the global temperatures using MATLAB's backdivision operator (`T = K_global\f_global`)
+6. Calculation of the x and y derivatives of the global temperature distribution
+7. Calculation of the flux at each point from the derivatives
+8. Comparison to exact solution
+9. Plotting of requested plots ( [`plot_t_qpp.m`](plot_t_qpp.m) )
+  1. ![temperature surface plot](img/temperature_surface_plot.png)
+  2. ![heat flux quiver plot](img/heat_flux_quiver_plot.png)
 
 
 ## Discussion and Report
