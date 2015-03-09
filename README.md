@@ -98,7 +98,7 @@ x = [ 5 5 5 5 ];
 
 	2. Import of values for each element into the structure array using `readinp.m`
 	3. Plotting of the mesh for visual confirmation of correct import
-	(sample figure from mesh confirmation)[!img/mesh_confirmation_example.eps]
+	![sample figure from mesh confirmation](img/mesh_confirmation_example.eps)
 
 
 ## Discussion and Report
