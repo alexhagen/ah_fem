@@ -103,6 +103,28 @@ x = [ 5 5 5 5 ];
   	1. Creation of a `struct` for the boundary conditions which has the following layout:
 
   	```
+	                +-----+                               
+	                | bcf |                               
+	                +--+--+                               
+	                   |                                  
+	      +------------+--------------+                   
+	      |                           |                   
+	+-----+----+                +-----+------+            
+	| f(1:n_f) |                | bc(1:n_bc) |            
+	+--+-------+                +--+---------+            
+	   |                           |                      
+	   |     +------+              |      +------+        
+	   +-----+ name |              +------+ name |        
+	   |     +-----++              |      +-----++        
+	   |     +-----+               |      +-----+         
+	   +-----+ set |               +------+ set |         
+	   |     +-----+               |      +-----+         
+	   |     +-----+----+          |      +-----+         
+	   +-----+ elements |          +------+ |al |         
+	   |     +-------+--+          |      +-----+         
+	   |     +-------+             |      +-----+--------+
+	   +-----+ |alue |             +------+ global_nodes |
+	         +-+-----+                    +--------------+
   	```
 
   	2. Import of values for the boundary conditions and source conditions using `readinp.m`
