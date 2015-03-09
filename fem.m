@@ -1,13 +1,19 @@
-function []=fem(filename)
+function [T,qpp]=fem(filename)
     %% Import of mesh from file specified by filename
+    mesh = import_mesh(filename);
     %% Import of boundary conditions from file specified by filename
+    % import conductivity from the file
+    mesh.k = readinp('*Conductivity',filename);
+    % import Temperature boundary conditions
+    %boundary = readinp('*Boundary',filename)
     %% Import of sources from file specified by filename
     %% Construction of stiffness matrix
-    for n = [1:n_el]
-        % allocate the stiffness and forcing matrices
-        K_el = zeros();
-        f_omega_el = zeros();
-        f_gamma_el = zeros();
+    % allocate a structure to hold all of the elemental stiffness matrices
+    for n = [1:mesh.n_el]
+        % preallocate the stiffness and forcing matrices
+        K_el = zeros(mesh.elements(n).n_nodes,mesh.elements(n).n_nodes);
+        f_omega_el = zeros(mesh.elements(n).n_nodes,1);
+        f_gamma_el = zeros(mesh.elements(n).n_nodes,1);
         % iterate over every quadrature point
         for qp = 1:n_qp
             % find the quadrature point coordinates
@@ -31,6 +37,7 @@ function []=fem(filename)
             end
         end
     end
+    %{
     %% Applying Neumman BC
     %% Applying Dirichlet BC
     %% Assembly
@@ -44,4 +51,5 @@ function []=fem(filename)
     dTdy =;
     qpp =;
     return [T,qpp];
+    %}
 end

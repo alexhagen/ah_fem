@@ -54,6 +54,50 @@ x = [ 5 5 5 5 ];
       * High Quadrilateral Mesh Density ( [`sqhole_quad_high_dirneubc.inp`](inp/sqhole_quad_high_dirneubc.inp) )
       * High Triangular Mesh Density ( [`sqhole_tri_high_dirneubc.inp`](inp/sqhole_tri_high_dirneubc.inp) )
   2.  Use MATLAB and provided template files to import these meshes
+  	1.  Creation of a `struct` which has the following layout:
+
+
+  	```
+  	                     +--------+                                       
+                         |  mesh  |                                       
+     +-------------------+--+---+-+                                       
+     |                      |   |                                         
+     |                      |   |                                         
++----+----+   +--------+----+   +---+-------------------+                 
+| n_nodes |   |  n_el  |            |  elements(1:n_el) |                 
++---------+   +--------+            +-------+-----------+                 
+                                            |                             
+                                            |                             
+                                            |   +-------+                 
+                                            +---+ el_no |                 
+                                            |   +-------+                 
+                                            |   +-------+--+              
+                                            +---+ el_type  |              
+                                            |   +---------++              
+                                            |   +---------+               
+                                            +---+ n_nodes |               
+                                            |   +---------+               
+                                            |   +---------+-----------+   
+                                            +---+ local_corner_xi,eta |   
+                                            |   +---------------------+   
+                                            |   +---------------------++  
+                                            +---+ local_midside_xi,eta |  
+                                            |   +----------------------+  
+                                            |   +----------------------++ 
+                                            +---+ global_corner_node_no | 
+                                            |   +-----------------------+ 
+                                            |   +-----------------------++
+                                            +---+ global_midside_node_no |
+                                            |   +-------------------+----+
+                                            |   +-------------------+     
+                                            +---+ global_corner_x,y |     
+                                            |   +-------------------+     
+                                            |   +-------------------++    
+                                            +---+ global_midside_x,y |    
+                                                +--------------------+    
+```
+
+	2
 
 
 ## Discussion and Report
