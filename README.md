@@ -53,9 +53,8 @@ x = [ 5 5 5 5 ];
       * Moderate Triangular Mesh Density ( [`sqhole_tri_mod_dirneubc.inp`](inp/sqhole_tri_mod_dirneubc.inp) )
       * High Quadrilateral Mesh Density ( [`sqhole_quad_high_dirneubc.inp`](inp/sqhole_quad_high_dirneubc.inp) )
       * High Triangular Mesh Density ( [`sqhole_tri_high_dirneubc.inp`](inp/sqhole_tri_high_dirneubc.inp) )
-  2.  Use MATLAB and provided template files to import these meshes
+  2.  Use MATLAB and provided template files to import these meshes ( [`import_mesh.m`](import_mesh.m))
   	1.  Creation of a `struct` which has the following layout:
-
 
   	```
 	                         +--------+                                       
@@ -97,7 +96,9 @@ x = [ 5 5 5 5 ];
 	                                                +--------------------+    
 ```
 
-	2
+	2. Import of values for each element into the structure array using `readinp.m`
+	3. Plotting of the mesh for visual confirmation of correct import
+	(sample figure from mesh confirmation)[!img/mesh_confirmation_example.eps]
 
 
 ## Discussion and Report
