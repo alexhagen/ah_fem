@@ -1,12 +1,20 @@
 function [T,qpp]=fem(filename)
     %% Import of mesh from file specified by filename
     mesh = import_mesh(filename);
-    %% Import of boundary conds and sources from file specified by filename
+    %% Application of boundary conditions and materials
     % import conductivity from the file
     k = readinp('*Conductivity',filename);
-    % import Temperature boundary conditions
-    bcf = import_bcf(filename,mesh);
-    %{
+    % Note that these conditions are provided in the .inp file, but the
+    % abaqus layout is very clunky.  I found it more elegant to hardcode
+    % these values in.
+    % Apply the Dirichlet boundary condition to the left boundary with
+    % value 0.0
+    dir_bcs(1) = dir_bc(mesh,@(x,y) x==-0.5,0.0);
+    % Apply the Dirichlet boundary condition to the right boundary with
+    % value 1.0
+    dir_bcs(2) = dir_bc(mesh,@(x,y) x==0.5,1.0);
+    % Apply any neumann boundary conditions here
+
     %% Construction of stiffness matrix
     % allocate a structure to hold all of the elemental stiffness matrices
     for n = 1:mesh.n_el
@@ -40,6 +48,7 @@ function [T,qpp]=fem(filename)
     %% Applying Neumman BC
     %% Applying Dirichlet BC
     %% Assembly
+    %{
     %% Solving
     % using matlab's backdivision operator to solve the system [K]T=f where
     % K is n x n, and T and f are n x 1

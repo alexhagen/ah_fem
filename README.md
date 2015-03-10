@@ -100,35 +100,38 @@ x = [ 5 5 5 5 ];
 	3. Plotting of the mesh for visual confirmation of correct import
 	![sample figure from mesh confirmation](img/mesh_confirmation_example.png)
   3.  Importing the boundary and body conditions and where they are applied throughout the model
-  	1. Creation of a `struct` for the boundary conditions which has the following layout:
+  	1. Creation of a `struct` for the dirichlet boundary conditions which has the following layout:
 
   	```
-	                +-----+                               
-	                | bcf |                               
-	                +--+--+                               
-	                   |                                  
-	      +------------+--------------+                   
-	      |                           |                   
-	+-----+----+                +-----+------+            
-	| f(1:n_f) |                | bc(1:n_bc) |            
-	+--+-------+                +--+---------+            
-	   |                           |                      
-	   |     +------+              |      +------+        
-	   +-----+ name |              +------+ name |        
-	   |     +-----++              |      +-----++        
-	   |     +-----+               |      +-----+         
-	   +-----+ set |               +------+ set |         
-	   |     +-----+               |      +-----+         
-	   |     +-----+----+          |      +-----+         
-	   +-----+ elements |          +------+ |al |         
-	   |     +-------+--+          |      +-----+         
-	   |     +-------+             |      +-----+--------+
-	   +-----+ |alue |             +------+ global_nodes |
-	         +-+-----+                    +--------------+
+	                 +----------------+               
+	                 | dir_bc(1:n_bc) |               
+	                 +-------+--------+               
+	                         |                        
+	  +------+--------+------+---------+              
+	  |      |        |                |              
+	+-+-+  +-+-+  +---+---+  +---------+-----------+  
+	| x |  | y |  | value |  | elements(1:n_bc_el) |  
+	+---+  +---+  +-------+  +--+------------------+  
+	                            |                     
+	                            |     +-------------+ 
+	                            +-----+ local_nodes | 
+	                            |     +-------------+ 
+	                            |     +--------------+
+	                            +-----+ global_nodes |
+	                                  +--------------+
   	```
 
-  	2. Import of values for the boundary conditions and source conditions using `readinp.m`
-  	3. Plotting of b.c. on top of previous mesh figure for visual confirmation of correct import
+  	2. Creation of a `struct` for the neumann boundary conditions which has the following layout:
+
+  	```
+  	```
+
+  	3. Creation of a `struct` for the source conditions which has the following layout:
+
+  	```
+  	```
+
+  	4. Plotting of b.c. on top of previous mesh figure for visual confirmation of correct import
   	![sample figure from bc/bf confirmation](img/bcbf_confirmation_example.png)
 2. Creation of the stiffness matrix for each element
   1. something

@@ -55,7 +55,6 @@ function [mesh]=import_mesh(filename)
         elements(i).global_midside_y = nodes(elements(i).global_midside_node_no,3);
         mesh.elements = elements;
         %plot this to make sure it's right
-        %{
         mesh.fig = figure(1);
         hold on;
         patch(elements(i).global_corner_x,...
@@ -69,5 +68,5 @@ function [mesh]=import_mesh(filename)
         xlabel('x-coordinate ($x$) [$mm$]','Interpreter','LaTeX');
         ylabel('y-coordinate ($y$) [$mm$]','Interpreter','LaTeX');
         title('Mesh Verification Figure','Interpreter','LaTeX');
-        %}
+        axis([-.6 .6 -.6 .6]);
     end
