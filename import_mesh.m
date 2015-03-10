@@ -22,12 +22,10 @@ function [mesh]=import_mesh(filename)
         % determine if quad or tri element
         if size(elements_local,2)-1 == 6
             elements(i).el_type = 'quadratic triangular';
-            elements(i).local_corner_xi = [];
-            elements(i).local_corner_eta = [];
-            elements(i).local_corner_zeta = [];
-            elements(i).local_midside_xi = [];
-            elements(i).local_midside_eta = [];
-            elements(i).local_midside_zeta = [];
+            elements(i).local_corner_xi = [1 0 0 ];
+            elements(i).local_corner_eta = [0 1 0];
+            elements(i).local_midside_xi = [0.5 0 0.5];
+            elements(i).local_midside_eta = [0.5 0.5 0];
             elements(i).n_nodes = 6;
             el_no_corners = 3;
         elseif size(elements_local,2)-1 == 8
@@ -57,7 +55,7 @@ function [mesh]=import_mesh(filename)
         elements(i).global_midside_y = nodes(elements(i).global_midside_node_no,3);
         mesh.elements = elements;
         %plot this to make sure it's right
-        mesh.fig = figure(1);
+        mesh.fig = subplot(2,2,1);
         hold on;
         patch(elements(i).global_corner_x,...
             elements(i).global_corner_y,...

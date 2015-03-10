@@ -2,7 +2,36 @@
 \lyxformat 474
 \begin_document
 \begin_header
-\textclass tufte-handout
+\textclass article
+\begin_preamble
+
+\usepackage{xcolor}
+\usepackage{verbatim}
+\definecolor{gray60}{RGB}{116,108,102}
+\definecolor{gray40}{RGB}{167,169,172}
+\definecolor{gray20}{RGB}{209,211,212}
+\definecolor{newgold}{RGB}{227,174,36}
+\definecolor{puteal}{RGB}{46,175,164}
+
+\newcommand\realnumberstyle[1]{}
+
+\makeatletter
+\newcommand{\zebra}[3]{%
+    {\realnumberstyle{#3}}%
+    \begingroup
+    \lst@basicstyle
+    \ifodd\value{lstnumber}%
+        \color{#1}%
+    \else
+        \color{#2}%
+    \fi
+        \rlap{\hspace*{\lst@numbersep}%
+        \color@block{\linewidth}{\ht\strutbox}{\dp\strutbox}%
+        }%
+    \endgroup
+}
+\makeatother
+\end_preamble
 \use_default_options true
 \maintain_unincluded_children false
 \language english
@@ -24,6 +53,7 @@
 \output_sync 0
 \bibtex_command default
 \index_command default
+\float_placement H
 \paperfontsize default
 \spacing single
 \use_hyperref false
@@ -81,249 +111,793 @@ Alex Hagen
 March 10, 2015
 \end_layout
 
-\begin_layout Part*
-Problem 1
+\begin_layout Section
+Code Description
 \end_layout
 
 \begin_layout Standard
-Consider the heat conduction problem of the square plate with only Dirichlet
- boundary conditions prescribed (
-\begin_inset Formula $\left.T\right|_{\left(-b,y\right)}=0$
-\end_inset
-
-, 
-\begin_inset Formula $\left.T\right|_{\left(b,y\right)}=1$
-\end_inset
-
-, 
-\begin_inset Formula $s\left(x,y\right)=0$
-\end_inset
-
-, 
-\begin_inset Formula $k\left(x,y\right)=1$
-\end_inset
-
-).
+The provided code attempts to use finite element method to solve the heat
+ conduction equation in two dimensions.
+ As requested, the code uses quadrilateral 8 noded and triangular 6 noded
+ elements to provide solutions.
+ The code has been prepared to provide solutions to three problems: 
 \end_layout
 
-\begin_layout Section*
-Analytical Solution
+\begin_layout Itemize
+A 2 dimensional plate with temperature fixed at both x boundaries
+\end_layout
+
+\begin_layout Itemize
+A 2 dimensional plate with temperature fixed at one x boundary and heat
+ flux fixed at the other x boundary
+\end_layout
+
+\begin_layout Itemize
+A 2 dimensional plate with a circular hole with temperature fixed at the
+ internal boundary and at the two x boundaries, and heat flux fixed at the
+ two y boundaries
 \end_layout
 
 \begin_layout Standard
-The steady state heat equation (Poisson's equation) is given in one dimension
- as
-\begin_inset Formula 
-\[
-\frac{d}{dx}k\frac{d}{dx}T+\cancelto{0}{s}=0
-\]
+The code provides the solutions to these as plots of temperature, heat flux,
+ and error (which is defined as 
+\begin_inset Formula $\sigma=T_{FEM}-T_{exact}$
+\end_inset
+
+) compared to the analytical solutions, which are a linear temperature profile,
+ a quadratic temperature profile, and a more complicated, but provided temperatu
+re profile, respectively.
+\end_layout
+
+\begin_layout Section
+Salient Features
+\end_layout
+
+\begin_layout Standard
+The code was written with an attempt to be highly general and object oriented.
+ Although MATLAB is not ideally suited for object oriented programming,
+ the benefits of using object oriented were great.
+ Using an object oriented mesh, which consisted of a structure array of
+ elements, each with their own connectivity matrices and connections to
+ global, allowed for easy adaptation between quadrilateral and triangular
+ elements.
+ This way the object could be passed between objects and, if generalized
+ well, could provide a black box for each step.
+\end_layout
+
+\begin_layout Standard
+Generality of input parameters was also practiced.
+ For the boundaries and their values, it could be possible to simply define
+ specific boundaries and give the values of those boundary nodes explicitly.
+ However, the code provided uses MATLAB's ability to pass function handlers
+ through other functions as arguments.
+ The code then is able to evaluate these functions at the corresponding
+ global values.
+ For example:
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+
+\backslash
+lstset{% general command to set parameter(s)
+\end_layout
+
+\begin_layout Plain Layout
+
+	language=MATLAB, %Use the c language
+\end_layout
+
+\begin_layout Plain Layout
+
+	numbers=left, %Line numbering
+\end_layout
+
+\begin_layout Plain Layout
+
+	frame=none,
+\end_layout
+
+\begin_layout Plain Layout
+
+	basicstyle=
+\backslash
+small, % print whole listing small 
+\end_layout
+
+\begin_layout Plain Layout
+
+	keywordstyle=
+\backslash
+color{puteal}
+\backslash
+bfseries, % underlined bold black keywords 
+\end_layout
+
+\begin_layout Plain Layout
+
+	identifierstyle=, % nothing happens 
+\end_layout
+
+\begin_layout Plain Layout
+
+	commentstyle=
+\backslash
+color{gray40}, % white comments 
+\end_layout
+
+\begin_layout Plain Layout
+
+	stringstyle=
+\backslash
+color{newgold}
+\backslash
+ttfamily, % typewriter type for strings 
+\end_layout
+
+\begin_layout Plain Layout
+
+	showstringspaces=false} % no special string spaces
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset listings
+inline false
+status open
+
+\begin_layout Plain Layout
+
+% creating a function handle anonymously for the criteria
+\end_layout
+
+\begin_layout Plain Layout
+
+criteria = @(x,y) x == -b;  % if x is on the left boundary, return true
+\end_layout
+
+\begin_layout Plain Layout
+
+% now pass in this criteria and a group of x and y coordinates
+\end_layout
+
+\begin_layout Plain Layout
+
+function [nodes_matching_criteria]=check_boundaries(x,y,criteria)
+\end_layout
+
+\begin_layout Plain Layout
+
+  % we can now find the indices where the criteria returns true
+\end_layout
+
+\begin_layout Plain Layout
+
+  indices_of_nodes_matching_criteria = find(feval(criteria,x,y));
+\end_layout
+
+\begin_layout Plain Layout
+
+  % then we can find the nodes of the x and y values of those points
+\end_layout
+
+\begin_layout Plain Layout
+
+  nodes_matching_criteria = [ x(indices_of_nodes_matching_criteria); ...
+\end_layout
+
+\begin_layout Plain Layout
+
+    y(indices_of_nodes_matching_criteria) ];
+\end_layout
+
+\begin_layout Plain Layout
+
+end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+This allowed for the application of functions to boundary conditions and
+ for criteria (which was immensely helpful in dealing with the square plate
+ with a hole).
+\end_layout
+
+\begin_layout Standard
+An attempt was also made to add visual clues to help debugging.
+ In the mesh importation routine, each element is plotted with yellow fill
+ color, with all nodes plotted with a small 'x' to indicate their position.
+ Upon addition of boundary conditions, these are highlighted in green or
+ purple (depending on their type) and an annotation of the value is provided
+ in the visual.
+\end_layout
+
+\begin_layout Section
+Computational Effort Description
+\end_layout
+
+\begin_layout Standard
+Because of MATLAB's inability in object oriented programming, the resulting
+ code is not computationally efficient.
+ In the mesh, every element has a defined matrix including the isoparametric
+ coordinates.
+ In a different language, such as C++ or Python, each element could simply
+ have a pointer to these matrices, defined once in memory.
+ This would also decrease the amount of iterating through structures that
+ is currently required in the code.
+ In general, the code is slow to run (around 80 seconds for a 100 element
+ mesh).
+ By using a lower level language (such as C++ or Fortran) or a more memory
+ efficient language (such as C++ or Python), the computational burden of
+ this code could be drastically reduced.
+\end_layout
+
+\begin_layout Section
+Results and Concerns
+\end_layout
+
+\begin_layout Standard
+For the Dirichlet boundary only condition, the code provides exact results.
+\end_layout
+
+\begin_layout Standard
+For the analyses which have neumann boundary conditions, the results seem
+ to be non-sensical.
+ A good example of this is Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plate-Problem-with"
 
 \end_inset
 
 .
- Differentiating twice, we have
-\begin_inset Formula 
-\[
-k\frac{d}{dx}T=c_{1}
-\]
+ In Figure 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Plate-Problem-with"
 
 \end_inset
 
-
-\begin_inset Formula 
-\[
-T=\frac{c_{1}}{k}x+c_{2}
-\]
-
-\end_inset
-
-and applying the Dirichlet boundary conditions on both sides, we have
-\begin_inset Formula 
-\[
-\left.T\right|_{\left(-b,y\right)}=0=-\frac{c_{1}}{k}b+c_{2}
-\]
-
-\end_inset
-
-, so
-\begin_inset Formula 
-\[
-c_{2}=\frac{c_{1}}{k}b
-\]
-
-\end_inset
-
-, and
-\begin_inset Formula 
-\[
-\left.T\right|_{\left(b,y\right)}=1=\frac{c_{1}}{k}b+c_{2}
-\]
-
-\end_inset
-
-, so
-\begin_inset Formula 
-\[
-1=\frac{c_{1}}{k}b+\frac{c_{1}}{k}b
-\]
-
-\end_inset
-
-, therefore
-\begin_inset Formula 
-\[
-c_{1}=\frac{k}{2b}
-\]
-
-\end_inset
-
-, and 
-\begin_inset Formula 
-\[
-c_{2}=\frac{\frac{k}{2b}b}{k}=\frac{1}{2}
-\]
-
-\end_inset
-
-, which gives us the final result of
-\begin_inset Formula 
-\[
-T=\frac{x}{2b}+\frac{1}{2}
-\]
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Part*
-Problem 2
+, there are only boundary conditions on the left and right side, as indicated
+ in the mesh plot.
+ This dictates that our solution should ONLY be in the x direction, and
+ should not vary in the y direction.
+ Unfortunately, the application of the neumann boundary condition is flawed,
+ and there becomes a y direction gradient.
+ This effect is not relieved when increasing the amount of nodes, in fact
+ the magnitude of error increases as the amount of nodes increases.
+ The neumann boundary condition was removed but the uniform source included
+ to check for results, and this provided sensical and exact results.
+ This indicates that the application of the neumann boundary condition is
+ creating some sort of 2nd order effect which is non-physical.
 \end_layout
 
 \begin_layout Standard
-Consider the heat conduction problem of a square plate with a constant heat
- source, Dirichlet boundary conditions, and neumann boundary conditions
- (
-\begin_inset Formula $\left.T\right|_{\left(-b,y\right)}=0$
+\begin_inset Newpage pagebreak
 \end_inset
 
-, 
-\begin_inset Formula $\left.\overline{q}\right|_{\left(b,y\right)}=-2$
-\end_inset
 
-, 
-\begin_inset Formula $s\left(x,y\right)=2$
-\end_inset
-
-, 
-\begin_inset Formula $k\left(x,y\right)=1$
-\end_inset
-
-).
- Assume that temperature is a function of only 
-\begin_inset Formula $x$
-\end_inset
-
-.
 \end_layout
 
-\begin_layout Section*
-Analytical Solution
+\begin_layout Part
+Figures
 \end_layout
 
 \begin_layout Standard
-The steady state heat equation (Poisson's equation) is given in one dimension
- as
-\begin_inset Formula 
-\[
-\frac{d}{dx}k\frac{d}{dx}T+s=0
-\]
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_quad_mod_dirbc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
 
 \end_inset
 
-.
- Differentiating once, we have
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Dirichlet Only Problem with Quadrilateral Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\[
-k\frac{d}{dx}T=-sx+c_{1}
-\]
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_tri_mod_dirbc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
 
 \end_inset
 
-, and using the definition of heat flux in one dimension as
-\begin_inset Formula 
-\[
-q=-k\frac{d}{dx}T
-\]
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Dirichlet Only Problem with Triangular Elements
+\end_layout
 
 \end_inset
 
-, we can use the Neumann boundary condition to determine 
-\begin_inset Formula $c_{1}$
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
 \end_inset
 
-, with
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\[
--\left.\overline{q}\right|_{b}=-2=-sx+c_{1}
-\]
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_quad_low_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
 
 \end_inset
 
 
-\begin_inset Formula 
-\[
-c_{1}=sb-\overline{q}=2b+2
-\]
+\end_layout
 
-\end_inset
+\begin_layout Plain Layout
+\begin_inset Caption Standard
 
-, so 
-\begin_inset Formula 
-\[
-k\frac{d}{dx}T=-sx+2b+2
-\]
-
-\end_inset
-
-, and differentiating
-\begin_inset Formula 
-\[
-T=-\frac{s}{2k}x^{2}+\left(\frac{2b}{k}+\frac{2}{k}\right)x+c_{2}
-\]
-
-\end_inset
-
-, using the Dirichlet boundary condition, we have
-\begin_inset Formula 
-\[
-\left.T\right|_{\left(-b,y\right)}=0=-\frac{s}{2k}b^{2}+\left(\frac{2b}{k}+\frac{2}{k}\right)b+c_{2}
-\]
+\begin_layout Plain Layout
+Plate Problem with Low Density Quadrilateral Elements
+\end_layout
 
 \end_inset
 
 
-\begin_inset Formula 
-\[
-c_{2}=\frac{s}{2k}b^{2}-\left(\frac{2b}{k}+\frac{2}{k}\right)b
-\]
+\end_layout
 
 \end_inset
 
-and finally
+
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\[
-T=\frac{-s}{2k}x^{2}+\left(\frac{2b}{k}+\frac{2}{k}\right)x+\frac{s}{2k}b^{2}-\left(\frac{2b}{k}+\frac{2}{k}\right)b=\left(\frac{s}{2k}-\frac{2b}{k}-\frac{2}{k}\right)\left(b-x\right)
-\]
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_quad_mod_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate Problem with Moderate Density Quadrilateral Elements 
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Plate-Problem-with"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_quad_high_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate Problem with High Density Quadrilateral Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_tri_low_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate Problem with Low Density Triangular Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_tri_mod_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate Problem with Moderate Density Triangular Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sq_tri_high_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate Problem with High Density Triangular Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sqhole_quad_low_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate with Hole Problem with Low Density Quadrilateral Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sqhole_quad_mod_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate with Hole Problem with Moderate Density Quadrilateral Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sqhole_quad_high_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate with Hole Problem with High Density Quadrilateral Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sqhole_tri_low_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate with Hole Problem with Low Density Triangular Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sqhole_tri_mod_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate with Hole Problem with Moderate Density Triangular Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename C:/Users/Alex/code/ah_fem/img_alex_hagen/sqhole_tri_high_dirneubc_alex_hagen.eps
+	lyxscale 10
+	width 100col%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Plate with Hole Problem with High Density Triangular Elements
+\end_layout
+
+\end_inset
+
+
+\end_layout
 
 \end_inset
 

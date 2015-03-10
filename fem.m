@@ -1,22 +1,4 @@
-function [T,x_global,y_global]=fem(filename)
-    %% Import of mesh from file specified by filename
-    mesh = import_mesh(filename);
-    %% Application of boundary conditions and materials
-    % import conductivity from the file
-    k = readinp('*Conductivity',filename);
-    % Note that these conditions are provided in the .inp file, but the
-    % abaqus layout is very clunky.  I found it more elegant to hardcode
-    % these values in.
-    % Apply the Dirichlet boundary condition to the left boundary with
-    % value 0.0
-    dir_bcs(1) = dir_bc(mesh,@(x,y) x==-0.5,0.0);
-    % Apply the Dirichlet boundary condition to the right boundary with
-    % value 1.0
-    dir_bcs(2) = dir_bc(mesh,@(x,y) x==0.5,1.0);
-    % Apply any neumann boundary conditions here
-
-    % Apply any source conditions here
-    sources = [];
+function [T,x_global,y_global,qpp,qppx,qppy]=fem(mesh,k,dir_bcs,neu_bcs,sources)
     %% Construction of stiffness matrix
     % set a symbolic xi and eta variable so we can evaluate later - we
     % arent actually doing any integrating with the symbolic variables
@@ -25,6 +7,7 @@ function [T,x_global,y_global]=fem(filename)
     syms zeta;
     % find the maximum stiffness element
     max_K_el = 0;
+    % iterate over all mesh elements
     for i = 1:mesh.n_el
         i
         % preallocate the stiffness and forcing matrices
@@ -32,77 +15,8 @@ function [T,x_global,y_global]=fem(filename)
         f_omega_el = zeros(mesh.elements(i).n_nodes,1);
         f_gamma_el = zeros(mesh.elements(i).n_nodes,1);
         % Find the symbolic N, G, J, and B matrices
-        if (strcmp(mesh.elements(i).el_type,'quadratic quadrilateral'))
-            % set up the constants for 2x2 gauss quadrature
-            qp_xi = [-1/sqrt(3) 1/sqrt(3) 1/sqrt(3) -1/sqrt(3)];
-            qp_eta = [-1/sqrt(3) -1/sqrt(3) 1/sqrt(3) 1/sqrt(3)];
-            omega = [1 1 1 1];
-            % Make the shape function for the 8 noded element
-            N_el_sym = 0.25*[...
-                -(1-xi)*(1-eta)*(1+xi+eta) ...
-                -(1+xi)*(1-eta)*(1-xi+eta) ...
-                -(1+xi)*(1+eta)*(1-xi-eta) ...
-                -(1-xi)*(1+eta)*(1+xi-eta) ...
-                2*(1-xi)*(1+xi)*(1-eta) ...
-                2*(1+xi)*(1-eta)*(1+eta) ...
-                2*(1-xi)*(1+xi)*(1+eta) ...
-                2*(1-xi)*(1-eta)*(1+eta)];
-            % Find the derivative of this for the 8 noded element
-            G_el_sym =0.25*[...
-                -(eta - 1)*(eta + xi + 1) - (eta - 1)*(xi - 1) ...
-                (eta - 1)*(eta - xi + 1) - (eta - 1)*(xi + 1) ...
-                (eta + 1)*(eta + xi - 1) + (eta + 1)*(xi + 1) ...
-                (eta + 1)*(xi - eta + 1) + (eta + 1)*(xi - 1) ...
-                2*(xi - 1)*(eta - 1) + 2*(eta - 1)*(xi + 1) ...
-                -2*(eta - 1)*(eta + 1) ...
-                -2*(xi - 1)*(eta + 1) - 2*(eta + 1)*(xi + 1) ...
-                2*(eta - 1)*(eta + 1); ...
-                -(xi - 1)*(eta + xi + 1) - (eta - 1)*(xi - 1) ...
-                (xi + 1)*(eta - xi + 1) + (eta - 1)*(xi + 1) ...
-                (xi + 1)*(eta + xi - 1) + (eta + 1)*(xi + 1) ...
-                (xi - 1)*(xi - eta + 1) - (eta + 1)*(xi - 1) ...
-                2*(xi - 1)*(xi + 1) ...
-                -2*(xi + 1)*(eta - 1) - 2*(xi + 1)*(eta + 1) ...
-                -2*(xi - 1)*(xi + 1) ...
-                2*(xi - 1)*(eta - 1) + 2*(xi - 1)*(eta + 1)];
-            % Construct the J matrix, which is the gradient matrix times
-            % the global values
-            J_el_sym = G_el_sym * ...
-                [ mesh.elements(i).global_corner_x' ...
-                mesh.elements(i).global_midside_x';
-                mesh.elements(i).global_corner_y' ...
-                mesh.elements(i).global_midside_y' ]';
-        else
-            % set up the constants for 4 point gauss quadrature
-            qp_xi = [0.6,0.2,0.2,1/3];
-            qp_eta = [0.2,0.6,0.2,1/3];
-            omega = [25/48 25/48 25/48 -27/48];
-            % Make the shape function for the 6 noded element
-            zeta = 1 - xi - eta;
-            N_el_sym = [...
-                xi*(2*xi - 1) ...
-                eta*(2*eta - 1) ...
-                zeta*(2*zeta - 1) ...
-                4*xi*eta ...
-                4*eta*zeta ...
-                4*xi*zeta ];
-            % Find the derivative of this for the 6 noded element
-            G_el_sym = [ diff(N_el_sym,xi); ...
-                diff(N_el_sym,eta); ];
-            % find the zeta values, which are equal to 1 - xi - eta
-            global_zeta = ones(1,numel(N_el_sym)) - ...
-                [ mesh.elements(i).global_corner_x' ...
-                mesh.elements(i).global_midside_x' ] - ...
-                [ mesh.elements(i).global_corner_y' ...
-                mesh.elements(i).global_midside_y' ];
-            % Construct the J matrix, which is the gradient matrix times
-            % the global values    
-            J_el_sym = G_el_sym * ...
-                [ mesh.elements(i).global_corner_x' ...
-                mesh.elements(i).global_midside_x';
-                mesh.elements(i).global_corner_y' ...
-                mesh.elements(i).global_midside_y' ]';
-        end
+        [N_el_sym,G_el_sym,J_el_sym,qp_xi,qp_eta,omega] = ...
+            element_type(mesh.elements(i));
         % iterate over every quadrature point
         for qp = 1:numel(qp_xi)
             % evaluate J, J_inv, and J_det
@@ -121,8 +35,18 @@ function [T,x_global,y_global]=fem(filename)
             K_el = K_el + k * ...
                 B_el' * B_el * omega(qp) * J_el_det;
             for n = 1:numel(sources)
+                % find the current global coordinates
+                delx = mesh.elements(i).global_corner_x(3) - ...
+                    mesh.elements(i).global_corner_x(1);
+                x = mesh.elements(i).global_corner_x(1) + ...
+                    delx * qp_xi(qp);
+                dely = mesh.elements(i).global_corner_y(3) - ...
+                    mesh.elements(i).global_corner_y(1);
+                y = mesh.elements(i).global_corner_y(1) + ...
+                    dely * qp_eta(qp);
                 % fill the forcing vector
-                f_omega_el = f_omega_el + s * N_el' ...
+                f_omega_el = f_omega_el + ...
+                    feval(sources(n).value,x,y) * N_el' ...
                     * omega(qp) * J_el_det;
             end
         end
@@ -130,12 +54,59 @@ function [T,x_global,y_global]=fem(filename)
         mesh.elements(i).K_el = K_el;
         mesh.elements(i).f_omega_el = f_omega_el;
         mesh.elements(i).f_gamma_el = f_gamma_el;
+        mesh.elements(i).B_el = B_el;
         % remember the maximum overall stiffness element
         if max_K_el < max(abs(K_el(:)))
             max_K_el = max(abs(K_el(:)));
         end
     end
+    
     %% Applying Neumman BC
+    for i = 1:numel(neu_bcs)
+        for j = 1:numel(neu_bcs(i).elements)
+            % Find the symbolic N, G, J, and B matrices
+            [N_el_sym,G_el_sym,J_el_sym,~,~,~] = ...
+                element_type(mesh.elements(neu_bcs(i).elements(j).num));
+            % there is always only one boundary in each element that has a
+            % boundary condition applied, so over this boundary, determine
+            % the shape function and omegas for one dimension
+            qp_eta = [-1/sqrt(3) 1/sqrt(3)];
+            omega = [ 1.0 1.0 ];
+            for qp = 1:numel(qp_eta)
+                horizontal = neu_bcs(i).horizontal;
+                % find the current global coordinates
+                el_no = neu_bcs(i).elements(j).num;
+                if ~horizontal
+                    N = eval(subs(N_el_sym,[xi eta],...
+                        [ neu_bcs(i).elements(j).xi(qp) qp_eta(qp) ]));
+                    J = eval(subs(J_el_sym,[xi eta],...
+                        [ neu_bcs(i).elements(j).xi(qp) qp_eta(qp) ]));
+                    J_det = sqrt(J(1,1)^2 + J(2,1)^2);
+                    x = neu_bcs(i).elements(j).x;
+                    y = neu_bcs(i).elements(j).y;
+                else
+                    N = eval(subs(N_el_sym,[xi eta],...
+                        [ qp_eta(qp) neu_bcs(i).elements(j).xi(qp) ]));
+                    J = eval(subs(J_el_sym,[xi eta],...
+                        [ qp_eta(qp) neu_bcs(i).elements(j).xi(qp) ]));
+                    J_det = sqrt(J(1,2)^2 + J(2,2)^2);
+                    x = neu_bcs(i).elements(j).x;
+                    y = neu_bcs(i).elements(j).y;
+                end
+                for p = 1:numel(neu_bcs(i).elements(j).local_nodes)
+                    q = feval(neu_bcs(i).value,x(p),y(p));
+                    f_gamma_el(neu_bcs(i).elements(j).local_nodes(p)) = ...
+                        f_gamma_el(neu_bcs(i).elements(j).local_nodes(p)) ...
+                        - q * N(neu_bcs(i).elements(j).local_nodes(p)) ...
+                        * omega(qp) * J_det;
+                end
+                
+            end
+            mesh.elements(neu_bcs(i).elements(j).num).f_gamma_el = ...
+                f_gamma_el;
+        end
+    end
+        
     %% Applying Dirichlet BC
     C = max_K_el * 1E7;
     % iterate over each boundary condition
@@ -152,13 +123,15 @@ function [T,x_global,y_global]=fem(filename)
                     C;
                 mesh.elements(dir_bcs(i).elements(j).num)...
                     .f_gamma_el(dir_bcs(i).elements(j).local_nodes(k)) = ...
-                    C*dir_bcs(i).value;
+                    C*dir_bcs(i).elements(j).local_values(k);
             end
         end
     end
+    
     %% Assembly
     % Preallocate the global stiffness and forcing matrices
     K_global = zeros(mesh.n_nodes,mesh.n_nodes);
+    B_global = zeros(mesh.n_nodes,2);
     x_global = zeros(mesh.n_nodes,1);
     y_global = zeros(mesh.n_nodes,1);
     f_global = zeros(mesh.n_nodes,1);
@@ -171,6 +144,9 @@ function [T,x_global,y_global]=fem(filename)
                     K_global(global_node_nos(j),global_node_nos(k)) + ...
                     mesh.elements(i).K_el(j,k);
             end
+            B_global(global_node_nos(j),:) = ...
+                B_global(global_node_nos(j),:) + ...
+                mesh.elements(i).B_el(:,j)';
             f_global(global_node_nos(j),1) = ...
                 f_global(global_node_nos(j),1) + ...
                 mesh.elements(i).f_omega_el(j) + ...
@@ -189,9 +165,16 @@ function [T,x_global,y_global]=fem(filename)
     % using matlab's backdivision operator to solve the system [K]T=f where
     % K is n x n, and T and f are n x 1
     T = K_global\f_global;
-    % solving the flux from the temperature distribution found in previous
-    % step
-    %dTdx =;
-    %dTdy =;
-    %qpp =;
+    % solve the flux from the B_el matrix
+    qppx = []; qppy = []; qpp = [];
+    for i = 1:numel(mesh.elements)
+        x_el = [mesh.elements(i).global_corner_x' mesh.elements(i).global_midside_x'];
+        y_el = [mesh.elements(i).global_corner_y' mesh.elements(i).global_midside_y'];
+        avg_x = sum(x_el)/numel(x_el);
+        avg_y = sum(y_el)/numel(y_el);
+        qppx = [ qppx avg_x ];
+        qppy = [ qppy avg_y ];
+        qpp = [qpp ...
+            -k*mesh.elements(i).B_el*T([ mesh.elements(i).global_corner_node_no mesh.elements(i).global_midside_node_no]) ];
+    end
 end

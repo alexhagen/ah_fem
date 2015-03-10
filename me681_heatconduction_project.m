@@ -12,81 +12,128 @@ function me681_heatconduction_project()
     %% Project Initialization
     % Input names
     disp('This project was done by')
-    student_name = 'Alex_Hagen';
+    student_name = 'alex_hagen';
     disp(student_name)
     
     % Creates a directory with your name .
     if (~exist(student_name,'dir'))
        % Command under Windows
-       system(['md ', student_name]);
+       system(['md img_' student_name]);
     end
     
+    
     %% Problem 1q - Quadrilateral Element
-    clf;
-    % use the fem function to import the mesh file from abaqus, construct
-    % the stiffness matrix, apply the boundary conditions, assemble into a
-    % global matrix, solve for the temperature, and then determine the flux
-    % at all mesh points
-    %filename = 'sq_tri_mod_dirbc';
-    filename = 'test_tri'
-    [T,x,y] = fem(['inp/' filename '.inp']);
-    xlin = linspace(min(x),max(x),100);
-    ylin = linspace(min(y),max(y),100);
-    [X,Y] = meshgrid(xlin,ylin);
-    f = scatteredInterpolant(x,y,T);
-    delx = max(x)-min(x);
-    dely = max(y)-min(y);
-    Z = f(X,Y);
-    T
-    figure(2)
-    surf(X-delx/200,Y-dely/200,Z,'Linestyle','none');
-    hold on;%interpolated
-    xlabel('x');
-    ylabel('y');
-    zlabel('T');
-    view([0,90]);
-    axis([-0.6 0.6 -0.6 0.6 min(T) max(T)]);
-    %{
-    % determine the temperature distribution and flux from the analytical
-    % solution for this problem
-    [T_exact,qpp_exact] = exact('sq_dirbc');
-    % compare the approximate solution to the exact solution
-    
-    % plot the requested plots
-    plot_T(T,filename);
-    plot_q(qpp,filename);
-    %% Problem 1t - Triangular Element
-    % use the fem function to import the mesh file from abaqus, construct
-    % the stiffness matrix, apply the boundary conditions, assemble into a
-    % global matrix, solve for the temperature, and then determine the flux
-    % at all mesh points
-    filename = 'sq_tri_mod_dirbc';
-    [T,qpp] = fem(['inp/' filename '.inp']);
-    % determine the temperature distribution and flux from the analytical
-    % solution for this problem
-    [T_exact,qpp_exact] = exact('sq_dirbc');
-    % compare the approximate solution to the exact solution
-    
-    % plot the requested plots
-    plot_T(T,filename);
-    plot_q(qpp,filename);
-    
-    %% Problem 2ql - Quadrilateral Low Density Element
+    tic;
+    close all;
     % use the fem function to import the mesh file from abaqus, construct
     % the stiffness matrix, apply the boundary conditions, assemble into a
     % global matrix, solve for the temperature, and then determine the flux
     % at all mesh points
     filename = 'sq_quad_mod_dirbc';
-    [T,qpp] = fem(['inp/' filename '.inp']);
-    % determine the temperature distribution and flux from the analytical
-    % solution for this problem
-    [T_exact,qpp_exact] = exact('sq_dirneubc');
-    % compare the approximate solution to the exact solution
+    inp_filename = ['inp/' filename '.inp'];
+    [dir_bcs,neu_bcs,sources,mesh,k] = problem1(inp_filename);
+    % Perform fem on this mesh with the given material, dirichlet boundary
+    % conditions, neumann boundary conditions, and sources
+    [T,x,y,qpp,qppx,qppy] = fem(mesh,k,dir_bcs,neu_bcs,sources);
+    plot_t(filename,x,y,T,qpp,qppx,qppy);
+    toc;
+
+    %% Problem 1t - Triangular Element
+    tic;
+    close all;
+    % use the fem function to import the mesh file from abaqus, construct
+    % the stiffness matrix, apply the boundary conditions, assemble into a
+    % global matrix, solve for the temperature, and then determine the flux
+    % at all mesh points
+    filename = 'sq_tri_mod_dirbc';
+    inp_filename = ['inp/' filename '.inp'];
+    [dir_bcs,neu_bcs,sources,mesh,k] = problem1(inp_filename);
+    % Perform fem on this mesh with the given material, dirichlet boundary
+    % conditions, neumann boundary conditions, and sources
+    [T,x,y,qpp,qppx,qppy] = fem(mesh,k,dir_bcs,neu_bcs,sources);
+    plot_t(filename,x,y,T,qpp,qppx,qppy);
+    toc;
     
-    % plot the requested plots and save to a file
-    plot_T(T,filename);
-    plot_q(qpp,filename);
-    %}
+    %% Problem 2q - Quadrilateral Element with Neumann Boundary Conditions
+    filenames = {'sq_quad_low_dirneubc','sq_quad_mod_dirneubc','sq_quad_high_dirneubc'};
+    denss = {'Low','Moderate','High'};
+    for i = 1:numel(filenames)
+        tic;
+        close all;
+        % use the fem function to import the mesh file from abaqus, construct
+        % the stiffness matrix, apply the boundary conditions, assemble into a
+        % global matrix, solve for the temperature, and then determine the flux
+        % at all mesh points
+        filename = char(filenames(i));
+        inp_filename = ['inp/' filename '.inp'];
+        [dir_bcs,neu_bcs,sources,mesh,k] = problem2(inp_filename);
+        % Perform fem on this mesh with the given material, dirichlet boundary
+        % conditions, neumann boundary conditions, and sources
+        [T,x,y,qpp,qppx,qppy] = fem(mesh,k,dir_bcs,neu_bcs,sources);
+        plot_t(filename,x,y,T,qpp,qppx,qppy);
+        compare_exact(filename,x,y,T,'sq');
+        toc;
+    end
+
+    %% Problem 2t - Triangular Element with Neumann Boundary Conditions
+    filenames = {'sq_tri_low_dirneubc','sq_tri_mod_dirneubc','sq_tri_high_dirneubc'};
+    for i = 1:numel(filenames)
+        tic;
+        close all;
+        % use the fem function to import the mesh file from abaqus, construct
+        % the stiffness matrix, apply the boundary conditions, assemble into a
+        % global matrix, solve for the temperature, and then determine the flux
+        % at all mesh points
+        filename = char(filenames(i));
+        inp_filename = ['inp/' filename '.inp'];
+        [dir_bcs,neu_bcs,sources,mesh,k] = problem2(inp_filename);
+        % Perform fem on this mesh with the given material, dirichlet boundary
+        % conditions, neumann boundary conditions, and sources
+        [T,x,y,qpp,qppx,qppy] = fem(mesh,k,dir_bcs,neu_bcs,sources);
+        plot_t(filename,x,y,T,qpp,qppx,qppy);
+        compare_exact(filename,x,y,T,'sq');
+        toc;
+    end
     
-    
+    %% Problem 3q
+    filenames = {'sqhole_quad_low_dirneubc','sqhole_quad_mod_dirneubc','sqhole_quad_high_dirneubc'};
+    for i = 1:numel(filenames)
+        tic;
+        close all;
+        % use the fem function to import the mesh file from abaqus, construct
+        % the stiffness matrix, apply the boundary conditions, assemble into a
+        % global matrix, solve for the temperature, and then determine the flux
+        % at all mesh points
+        filename = char(filenames(i));
+        inp_filename = ['inp/' filename '.inp'];
+        [dir_bcs,neu_bcs,sources,mesh,k] = problem3(inp_filename);
+        % Perform fem on this mesh with the given material, dirichlet boundary
+        % conditions, neumann boundary conditions, and sources
+        [T,x,y,qpp,qppx,qppy] = fem(mesh,k,dir_bcs,neu_bcs,sources);
+        plot_t(filename,x,y,T,qpp,qppx,qppy);
+        compare_exact(filename,x,y,T,'sqhole');
+        toc;
+    end
+    tic;
+
+    %% Problem 3t
+    filenames = {'sqhole_tri_low_dirneubc','sqhole_tri_mod_dirneubc','sqhole_tri_high_dirneubc'};
+    for i = 1:numel(filenames)
+        tic;
+        close all;
+        % use the fem function to import the mesh file from abaqus, construct
+        % the stiffness matrix, apply the boundary conditions, assemble into a
+        % global matrix, solve for the temperature, and then determine the flux
+        % at all mesh points
+        filename = char(filenames(i));
+        inp_filename = ['inp/' filename '.inp'];
+        [dir_bcs,neu_bcs,sources,mesh,k] = problem3(inp_filename);
+        % Perform fem on this mesh with the given material, dirichlet boundary
+        % conditions, neumann boundary conditions, and sources
+        [T,x,y,qpp,qppx,qppy] = fem(mesh,k,dir_bcs,neu_bcs,sources);
+        plot_t(filename,x,y,T,qpp,qppx,qppy);
+        compare_exact(filename,x,y,T,'sqhole');
+        toc;
+    end
+    tic;
 end
