@@ -22,12 +22,30 @@ function me681_heatconduction_project()
     end
     
     %% Problem 1q - Quadrilateral Element
+    clf;
     % use the fem function to import the mesh file from abaqus, construct
     % the stiffness matrix, apply the boundary conditions, assemble into a
     % global matrix, solve for the temperature, and then determine the flux
     % at all mesh points
-    filename = 'sq_quad_mod_dirbc';
-    [T,qpp] = fem(['inp/' filename '.inp']);
+    %filename = 'sq_tri_mod_dirbc';
+    filename = 'test_tri'
+    [T,x,y] = fem(['inp/' filename '.inp']);
+    xlin = linspace(min(x),max(x),100);
+    ylin = linspace(min(y),max(y),100);
+    [X,Y] = meshgrid(xlin,ylin);
+    f = scatteredInterpolant(x,y,T);
+    delx = max(x)-min(x);
+    dely = max(y)-min(y);
+    Z = f(X,Y);
+    T
+    figure(2)
+    surf(X-delx/200,Y-dely/200,Z,'Linestyle','none');
+    hold on;%interpolated
+    xlabel('x');
+    ylabel('y');
+    zlabel('T');
+    view([0,90]);
+    axis([-0.6 0.6 -0.6 0.6 min(T) max(T)]);
     %{
     % determine the temperature distribution and flux from the analytical
     % solution for this problem

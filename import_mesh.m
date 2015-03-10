@@ -24,8 +24,10 @@ function [mesh]=import_mesh(filename)
             elements(i).el_type = 'quadratic triangular';
             elements(i).local_corner_xi = [];
             elements(i).local_corner_eta = [];
+            elements(i).local_corner_zeta = [];
             elements(i).local_midside_xi = [];
             elements(i).local_midside_eta = [];
+            elements(i).local_midside_zeta = [];
             elements(i).n_nodes = 6;
             el_no_corners = 3;
         elseif size(elements_local,2)-1 == 8
