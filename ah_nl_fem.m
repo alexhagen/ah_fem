@@ -1,4 +1,4 @@
-function [ u_n ] = ah_nl_fem(n_el,n_maxiter,method)
+function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
     %% Set some parameters
 
     %% Zero out the displacements
@@ -6,14 +6,14 @@ function [ u_n ] = ah_nl_fem(n_el,n_maxiter,method)
     u_n_gamma_u = u_hat;
 
     %% iterate
-    for n=[1:n_maxiter]
+    for n=1:n_maxiter
         % Zero out the matrices
         % k_global = 0;
         % f_global = 0;
         % g_global = 0;
 
         %% iterate over elements
-        for el=[0:n_el]
+        for el=0:mesh.n_el
             % Zero out the matrices
             % k_el = 0;
             % f_omega_el = 0;
@@ -22,7 +22,7 @@ function [ u_n ] = ah_nl_fem(n_el,n_maxiter,method)
             % get the local to global mapping
             get_local_to_global_mapping();
             %% iterate over quadrature points
-            for qp=[1:n_qp]
+            for qp=1:n_qp
                 % evaluate j_qp,j_qp_inv,j_qp_det,N,grad_N
                 % epsilon_ij = j_qp_inv * grad_N * u_n
                 % e_ij = epsilon_ij - (1/3)*epsilon_kk*delta_ij
@@ -34,10 +34,10 @@ function [ u_n ] = ah_nl_fem(n_el,n_maxiter,method)
             end
 
             %% apply the neumann bc
-            for el_gamma = [1:n_el_gamma_t]
+            for el_gamma = 1:mesh.n_el_gamma_t
                 % determine the orientation of the element el and its
                 % corresponding edges on gamma_t
-                for qp=[1:n_qp_gamma]
+                for qp=1:n_qp_gamma
                     % j_qp_gamma_det = sqrt((delxdelxi^2 + delydeleta^2)) or sqpt((delxdeleta^2 + delydelxi^2));
                     % evaluate corresponding N|gamma_q or N|gamma_q
                     % f_gamma_el = f_gamma_el + N' * t_i * omega_qp * j_qp_gamma_det;
@@ -50,13 +50,13 @@ function [ u_n ] = ah_nl_fem(n_el,n_maxiter,method)
         end
 
         %% Apply Dirichlet BC
-        for DOF_i = [gamma_u]
+        for DOF_i = gamma_u
             %k_global[global_indicies] = C;
             %f_global[global_indicies] = g_global[global_indices];
         end
 
         if norm(f_global - g_global)/norm(f_global) < epsilon_cr
-            return u_n;
+            return;
         end
 
         if strcmp(method,'newton-raphson')
