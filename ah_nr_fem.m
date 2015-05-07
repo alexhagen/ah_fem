@@ -1,11 +1,8 @@
 %% Set some parameters
-n_maxiter = 10;
-n_el = get_number_elements();
-n_qp = 2;
 
 %% Zero out the displacements
-% u1 = 0;
-% u_1_gamma_u = u_hat;
+u_n = 0;
+u_n_gamma_u = u_hat;
 
 %% iterate
 for n=[1:n_maxiter]
@@ -60,7 +57,17 @@ for n=[1:n_maxiter]
     if norm(f_global - g_global)/norm(f_global) < epsilon_cr
         return u_n;
     end
-    % solve K_global * delta_u_n = f_global - g_global
-    % u_np1 = u_n + delta_u_n
-end
+    
+    if method == 'newton-raphson'
+        % solve K_global * delta_u_n = f_global - g_global
+        delta_u_n = K_global\(f_global - g_global);
+        % u_np1 = u_n + delta_u_n
+        u_n = u_n + delta_u_n;
+    elseif method == 'secant'
+        % calculate delta_g_global
+        % solve K_global * delta_u_n = delta_g_global
+        delta_u_n = delta_g_global\delta_g_global;
+        % u_np1 = u_n + delta_u_n
+        u_n = u_n + delta_u_n;
+    end
 end
