@@ -1,6 +1,10 @@
 function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
     %% Set some parameters
-
+    n_el = numel(mesh);
+    C = 1.0E9;
+    v_0 = 0.33;
+    epsilon_cr = 1.0E-2;
+    
     %% Zero out the displacements
     u_n = 0;
     u_n_gamma_u = u_hat;
@@ -8,29 +12,57 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
     %% iterate
     for n=1:n_maxiter
         % Zero out the matrices
-        % k_global = 0;
-        % f_global = 0;
-        % g_global = 0;
+        k_global = zeros(8,8);
+        f_global = zeros(1,8);
+        g_global = zeros(1,8);
 
         %% iterate over elements
-        for el=0:mesh.n_el
+        for el=1:n_el
             % Zero out the matrices
-            % k_el = 0;
-            % f_omega_el = 0;
-            % f_gamma_el = 0;
-            % g_el = 0;
+            k_el = zeros(8,8);
+            f_omega_el = zeros(8,1);
+            f_gamma_el = zeros(8,1);
+            g_el = zeros(8,1);
+            
             % get the local to global mapping
-            get_local_to_global_mapping();
+            % get_local_to_global_mapping();
+            
             %% iterate over quadrature points
             for qp=1:n_qp
+                [xi,eta,omega_qp]=get_element_coords(qp);
+                [x,y]=get_point_coords(mesh,el);
                 % evaluate j_qp,j_qp_inv,j_qp_det,N,grad_N
-                % epsilon_ij = j_qp_inv * grad_N * u_n
-                % e_ij = epsilon_ij - (1/3)*epsilon_kk*delta_ij
-                % e_e = sqrt((2/3)*e_ij*e_ij);
-                % evaluate v_TS, E_TS, D_TS sequentially
-                % K_el = K_el + (j_qp_inv * grad_N)' * D_TS * (j_qp_inv * grad_N) * omega_qp * j_qp_det
-                % f_omega_el = f_omega_el + N' * b_i * omega_qp * j_qp_det
-                % g_el = g_el + (j_qp_inv * N)' * D_R * epsilon_ij * omega_qp * j_qp_det;
+                % calculate the shape function at this point
+                N = get_shape_function(xi,eta);
+                % calculate the gradient of the shape function at this
+                % point
+                grad_N = get_grad_function(xi,eta);
+                % calculate the jacobian and it's inverse and determinant
+                % at this point
+                j_qp = get_jacobian(xi,eta,x,y);
+                j_qp_inv = j_qp\eyes(size(j_qp));
+                j_qp_det = det(j_qp);
+                % calculate the strain at this point
+                epsilon_ij = j_qp_inv * grad_N * u_n;
+                % calculate the deviatoric component of strain
+                e_ij = epsilon_ij - (1/3)*epsilon_kk*delta_ij;
+                % calculate the equivalent strain
+                epsilon_e = sqrt((2/3)*e_ij*e_ij);
+                % calculate v_TS
+                v_TS = v_0;
+                % calculate E_TS
+                E_TS = E_0 * (1+epsilon_e);
+                % calculate D_TS
+                D_TS = (E_TS)/(1-v_TS^2) * ...
+                    [1 v_TS 0; v_TS 1 0; 0 0 (1-v_TS)/2];
+                % calculate the element stiffness matrix
+                K_el = K_el + (j_qp_inv * grad_N)' * D_TS * ...
+                    (j_qp_inv * grad_N) * omega_qp * j_qp_det;
+                % calculate the element body forcing vector
+                f_omega_el = f_omega_el + N' * b_i * omega_qp * j_qp_det;
+                % calculate the element internal force vector
+                g_el = g_el + (j_qp_inv * N)' * D_R * epsilon_ij * ...
+                    omega_qp * j_qp_det;
             end
 
             %% apply the neumann bc
@@ -44,15 +76,16 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
                 end
             end
 
-            %k_global[global_indices] = k_global[global_indices] + k_el;
-            %f_global[global_indices] = f_global[global_indices] + f_gamma_el + f_omega_el;
-            %g_global[global_indices] = g_global[global_indices] + g_el;
+            %% Assemble
+            k_global = k_global + k_el;
+            f_global = f_global + f_gamma_el + f_omega_el;
+            g_global = g_global + g_el;
         end
 
         %% Apply Dirichlet BC
-        for DOF_i = gamma_u
-            %k_global[global_indicies] = C;
-            %f_global[global_indicies] = g_global[global_indices];
+        for DOF_i = mesh.gamma_u
+            k_global(DOF_i,DOF_i) = C;
+            f_global(DOF_i) = g_global(DOF_i);
         end
 
         if norm(f_global - g_global)/norm(f_global) < epsilon_cr
@@ -62,7 +95,7 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
         if strcmp(method,'newton-raphson')
             % solve K_global * delta_u_n = f_global - g_global
             delta_u_n = K_global\(f_global - g_global);
-            % u_np1 = u_n + delta_u_n
+            % find the next step with u_np1 = u_n + delta_u_n
             u_n = u_n + delta_u_n;
         elseif strcmp(method,'secant')
             % calculate delta_g_global
