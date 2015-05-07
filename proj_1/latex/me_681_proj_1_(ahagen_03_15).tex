@@ -1,0 +1,76 @@
+%% LyX 2.1.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{geometry}
+\geometry{verbose}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{2}
+\usepackage{graphicx}
+
+\makeatletter
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% LyX specific LaTeX commands.
+%% Because html converters don't know tabularnewline
+\providecommand{\tabularnewline}{\\}
+
+\@ifundefined{showcaptionsetup}{}{%
+ \PassOptionsToPackage{caption=false}{subfig}}
+\usepackage{subfig}
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\begin{figure}
+\begin{centering}
+\begin{tabular}{cc}
+\subfloat[Mesh and Boundary Conditions Confirmation Figure]{\begin{centering}
+\includegraphics[width=7cm]{C:/Users/Alex/code/ah_fem/img/sq_quad_mod_dirbc_alex_hagen_mesh}
+\par\end{centering}
+
+} & \subfloat[Temperature Output Figure]{\centering{}\includegraphics[width=7cm,bb = 0 0 200 100, draft, type=eps]{C:/Users/Alex/code/ah_fem/img/sq_quad_mod_dirbc_temp.png}}\tabularnewline
+\subfloat[Heat Flux Output Figure]{\begin{centering}
+\includegraphics[width=7cm,bb = 0 0 200 100, draft, type=eps]{C:/Users/Alex/code/ah_fem/img/sq_quad_mod_dirbc_alex_hagen_quiver.png}
+\par\end{centering}
+
+} & \subfloat[Comparison to Analytical Solution Output Figure]{\begin{centering}
+\phantom{\hspace{7cm}}
+\par\end{centering}
+
+\centering{}}\tabularnewline
+\end{tabular}
+\par\end{centering}
+
+\protect\caption{Plate Problem, Dirichlet Only Boundary Condition Application with
+Quadrilateral Mesh Elements}
+
+
+\end{figure}
+
+
+\begin{figure}
+\begin{centering}
+\begin{tabular}{cc}
+\subfloat[Mesh and Boundary Conditions Confirmation Figure]{\begin{centering}
+\includegraphics[width=7cm,bb = 0 0 200 100, draft, type=eps]{C:/Users/Alex/code/ah_fem/img/sq_tri_mod_dirbc_alex_hagen_mesh.png}
+\par\end{centering}
+
+} & \subfloat[Temperature Output Figure]{\centering{}\includegraphics[width=7cm,bb = 0 0 200 100, draft, type=eps]{C:/Users/Alex/code/ah_fem/img/sq_tri_mod_dirbc_temp.png}}\tabularnewline
+\subfloat[Heat Flux Output Figure]{\begin{centering}
+\includegraphics[width=7cm,bb = 0 0 200 100, draft, type=eps]{C:/Users/Alex/code/ah_fem/img/sq_tri_mod_dirbc_alex_hagen_quiver.png}
+\par\end{centering}
+
+} & \subfloat[Comparison to Analytical Solution Output Figure]{\begin{centering}
+\includegraphics[width=7cm,bb = 0 0 200 100, draft, type=eps]{C:/Users/Alex/code/ah_fem/img/sq_tri_mod_dirbc_temp.png}
+\par\end{centering}
+
+\centering{}}\tabularnewline
+\end{tabular}
+\par\end{centering}
+
+\protect\caption{Plate Problem, Dirichlet Only Boundary Condition Application with
+Triangular Mesh Elements}
+\end{figure}
+
+\end{document}
