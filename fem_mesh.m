@@ -1,0 +1,52 @@
+function [mesh,n_global_nodes] = fem_mesh(n)
+    
+    mesh = {};
+    mesh(1).n_nodes = 21;
+    mesh(1).x=[0,1];
+    mesh(1).y=[0,0.5];
+    mesh(1).global_indices = [1 6 21 15 5 17 20 16];
+    mesh(1).gamma_mat = 0;
+    mesh(1).gammat_i = {};
+    mesh(1).gamma_u_mat = 1;
+    mesh(1).gammau_i = {};
+    mesh(1).gammau_i(1).u = [0];
+    mesh(1).u_indices = mesh(1).global_indices(find(mesh(1).x == 0));
+    mesh(1).rl = [-1];
+    mesh(1).dir = [0];
+    mesh(2).x=[1,2];
+    mesh(2).y=[0,0.5];
+    mesh(2).global_indices = [6 2 9 21 7 8 18 17];
+    mesh(2).gamma_mat = 1;
+    mesh(2).gammat_i = {};
+    mesh(2).rl = [1];
+    mesh(2).dir = [0];
+    mesh(2).gamma_u_mat = 0;
+    mesh(2).gammau_i = {};
+    mesh(2).gamma_u = 0;
+    mesh(2).gammat_i(1).t = [20;0];
+    mesh(2).gammat_i(1).ind = [2 3 6];
+    mesh(3).x=[1,2];
+    mesh(3).y=[0.5,1];
+    mesh(3).global_indices = [21 9 3 12 18 10 11 19];
+    mesh(3).gamma_mat = 1;
+    mesh(3).gammat_i = {};
+    mesh(3).rl = [1];
+    mesh(3).dir = [0];
+    mesh(3).gamma_u_mat = 0;
+    mesh(3).gammau_i = {};
+    mesh(3).gamma_u = 0;
+    mesh(3).gammat_i(1).t = [20;0];
+    mesh(3).gammat_i(1).ind = [2 3 6];
+    mesh(4).x=[0,1];
+    mesh(4).y=[0.5,1];
+    mesh(4).global_indices = [15 21 12 4 20 19 13 14];
+    mesh(4).gamma_mat = 0;
+    mesh(4).gammat_i = {};
+    mesh(4).rl = [];
+    mesh(4).dir = [];
+    mesh(4).gamma_u_mat = 1;
+    mesh(4).gammau_i = {};
+    mesh(4).gammau_i(1).u = [0];
+    mesh(4).u_indices = mesh(4).global_indices(find(mesh(4).x == 0));
+
+end
