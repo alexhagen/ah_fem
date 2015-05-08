@@ -1,6 +1,7 @@
 mesh = {};
 mesh(1).x=[0,2];
 mesh(1).y=[0,1];
+mesh(1).gamma_u = [2,3];
 
 
 tic;

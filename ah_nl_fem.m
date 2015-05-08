@@ -3,18 +3,21 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
     n_el = numel(mesh);
     C = 1.0E9;
     v_0 = 0.33;
+    E_0 = 90.0;
+    q = 1/3;
     epsilon_cr = 1.0E-2;
+    n_qp = 2;
     
     %% Zero out the displacements
-    u_n = 0;
-    u_n_gamma_u = u_hat;
+    u_n = zeros(4,3);
+    %u_n_gamma_u = u_hat;
 
     %% iterate
     for n=1:n_maxiter
         % Zero out the matrices
         k_global = zeros(8,8);
-        f_global = zeros(1,8);
-        g_global = zeros(1,8);
+        f_global = zeros(8,1);
+        g_global = zeros(8,1);
 
         %% iterate over elements
         for el=1:n_el
@@ -30,28 +33,43 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
             %% iterate over quadrature points
             for qp=1:n_qp
                 [xi,eta,omega_qp]=get_element_coords(qp);
-                [x,y]=get_point_coords(mesh,el);
+                %[x,y]=get_point_coords(mesh,el);
                 % evaluate j_qp,j_qp_inv,j_qp_det,N,grad_N
                 % calculate the shape function at this point
                 N = get_shape_function(xi,eta);
                 % calculate the gradient of the shape function at this
                 % point
-                grad_N = get_grad_function(xi,eta);
+                G_el = get_grad_function(xi,eta);
                 % calculate the jacobian and it's inverse and determinant
                 % at this point
-                j_qp = get_jacobian(xi,eta,x,y);
-                j_qp_inv = j_qp\eyes(size(j_qp));
+                j_qp = get_jacobian(xi,eta,mesh,el);
+                j_qp_inv = j_qp\eye(size(j_qp));
                 j_qp_det = det(j_qp);
+                % calculate the strain replacement matrix at this point
+                B_el = j_qp_inv * G_el;
                 % calculate the strain at this point
-                epsilon_ij = j_qp_inv * grad_N * u_n;
+                epsilon_ij = B_el * u_n;
+                % calculate the volume change part of the strain
+                epsilon_kk = sum(sum(eye(size(epsilon_ij)).*epsilon_ij)) / ...
+                    sqrt(numel(epsilon_ij));
+                % define the delta operator
+                delta_ij = eye(size(epsilon_ij));
                 % calculate the deviatoric component of strain
                 e_ij = epsilon_ij - (1/3)*epsilon_kk*delta_ij;
                 % calculate the equivalent strain
                 epsilon_e = sqrt((2/3)*e_ij*e_ij);
-                % calculate v_TS
-                v_TS = v_0;
-                % calculate E_TS
-                E_TS = E_0 * (1+epsilon_e);
+                % calculate v_TS and E_TS for each method
+                if strcmp(method,'newton-raphson')
+                    kappa = E_0 * (1+epsilon_e^q) / (3*(1-2*v_0));
+                    G_T = E_0 * (1+(q+1)*epsilon_e^q) / (2*(1+v_0));
+                    v_TS = (3*kappa - 2*G_T)/(2*(3*kappa + G_T));
+                    E_TS = 2*G_T*(1+v_TS);
+                elseif strcmp(method,'secant')
+                    kappa = E_0 * (1+epsilon_e^q)/(3*(1-2*v_0));
+                    G_S = E_0 * (1+epsilon_e^q)/(2*(1+v_0));
+                    v_TS = v_0;
+                    E_TS = E_0 * (1+epsilon_e^q);
+                end
                 % calculate D_TS
                 D_TS = (E_TS)/(1-v_TS^2) * ...
                     [1 v_TS 0; v_TS 1 0; 0 0 (1-v_TS)/2];
@@ -60,12 +78,16 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
                     (j_qp_inv * grad_N) * omega_qp * j_qp_det;
                 % calculate the element body forcing vector
                 f_omega_el = f_omega_el + N' * b_i * omega_qp * j_qp_det;
+                % calculate D_R
+                D_R = (E_TS)/(1-v_TS^2) * ...
+                    [1 v_TS 0; v_TS 1 0; 0 0 (1-v_TS)/2];
                 % calculate the element internal force vector
                 g_el = g_el + (j_qp_inv * N)' * D_R * epsilon_ij * ...
                     omega_qp * j_qp_det;
             end
 
             %% apply the neumann bc
+            %{
             for el_gamma = 1:mesh.n_el_gamma_t
                 % determine the orientation of the element el and its
                 % corresponding edges on gamma_t
@@ -75,6 +97,7 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
                     % f_gamma_el = f_gamma_el + N' * t_i * omega_qp * j_qp_gamma_det;
                 end
             end
+            %}
 
             %% Assemble
             k_global = k_global + k_el;
@@ -83,7 +106,7 @@ function [ u_n ] = ah_nl_fem(mesh,n_maxiter,method)
         end
 
         %% Apply Dirichlet BC
-        for DOF_i = mesh.gamma_u
+        for DOF_i = mesh(el).gamma_u
             k_global(DOF_i,DOF_i) = C;
             f_global(DOF_i) = g_global(DOF_i);
         end
