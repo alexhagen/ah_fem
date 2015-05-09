@@ -1,5 +1,5 @@
 function [ u_global ] = ah_nl_fem(mesh,n_maxiter,method)
-% number of elements
+    % number of elements
     n_el = numel(mesh);
     %convergence criteria
     epsilon_cr = 1.0E-3;
@@ -33,10 +33,6 @@ function [ u_global ] = ah_nl_fem(mesh,n_maxiter,method)
             f_omega_el = zeros(n_nodes*2,1);
             f_gamma_el = zeros(n_nodes*2,1);
             g_el = zeros(n_nodes*2,1);
-            hold on;
-            plot(mean(mesh(el).x),mean(mesh(el).y),'kd');
-            %fprintf('element %d center at %4.2f,%4.2f\n',el,mean(mesh(el).x),mean(mesh(el).y));
-            hold on;
             % get the local to global mapping
             % get_local_to_global_mapping();
             
@@ -111,8 +107,10 @@ function [ u_global ] = ah_nl_fem(mesh,n_maxiter,method)
         %% Apply Dirichlet BC
         [k_global,f_global,g_global] = ...
             apply_dirichlet_nl(mesh,k_global,f_global,g_global);
-
-        if norm(f_global - g_global)/norm(f_global) < epsilon_cr
+        subplot(3,2,5);
+        plot(n,sqrt(sum((f_global - g_global).^2))/sqrt(sum(f_global.^2)),'ko');
+        hold on;
+        if sqrt(sum((f_global - g_global).^2))/sqrt(sum(f_global.^2)) < epsilon_cr
             return;
         end
 

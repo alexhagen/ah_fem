@@ -2,21 +2,21 @@ function [P] = get_point_function(mesh,el)
     % get the point coordinates from the mesh
     [x,y] = get_point_coords(mesh,el);
     % set them into clockwise order
-    x1 = x(1);
-    x2 = x(2);
-    x3 = x(2);
-    x4 = x(1);
+    x1 = min(x);
+    x2 = max(x);
+    x3 = max(x);
+    x4 = min(x);
     x5 = mean(x);
-    x6 = x(2);
+    x6 = max(x);
     x7 = mean(x);
-    x8 = x(1);
-    y1 = y(1);
-    y2 = y(1);
-    y3 = y(2);
-    y4 = y(2);
-    y5 = y(1);
+    x8 = min(x);
+    y1 = min(y);
+    y2 = min(y);
+    y3 = max(y);
+    y4 = max(y);
+    y5 = min(y);
     y6 = mean(y);
-    y7 = y(2);
+    y7 = max(y);
     y8 = mean(y);
     % construct the P matrix
     P = [x1 0 y1; 0 y1 x1; x2 0 y2; 0 y2 x2; x3 0 y3; 0 y3 x3;...

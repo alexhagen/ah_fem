@@ -1,5 +1,57 @@
-function [mesh,n_global_nodes] = fem_mesh(n)
-    
+function [mesh,n_global_nodes] = fem_mesh(filename)
+    mesh = {};
+    % import full node matrix
+    nodes = readinp('*Node',filename);
+    nodes(:,2) = 2 * (nodes(:,2) + 0.5);
+    nodes(:,3) = nodes(:,3) + 0.5;
+    % find number of nodes
+    mesh(1).n_nodes = size(nodes,1);
+    % import full element matrix
+    elements_local = readinp('*Element',filename);
+    % find number of elements
+    mesh(1).n_el = size(elements_local,1);
+    % construct mesh
+    for i = 1:size(elements_local,1)
+        % find element number
+        mesh(i).el_no = elements_local(i,1);
+        % determine if quad or tri element
+        mesh(i).el_type = 'quadratic quadrilateral';
+        el_no_corners = 4;
+        % add the node values
+        mesh(i).global_indices = elements_local(i,2:end);
+        % add the global x values
+        mesh(i).x = [min(nodes(mesh(i).global_indices,2)) ...
+            max(nodes(mesh(i).global_indices,2))];
+        mesh(i).y = [min(nodes(mesh(i).global_indices,3)) ...
+            max(nodes(mesh(i).global_indices,3))];
+        mesh(i).gamma_mat = 0;
+        mesh(i).gammat_i = {};
+        mesh(i).gamma_u_mat = 0;
+        mesh(i).gammau_i = {};
+        mesh(i).rl = [];
+        mesh(i).dir = [];
+        for gi = mesh(i).global_indices
+            if nodes(gi,2) == 0
+                % add this to the dirichlet boundary
+                mesh(i).gamma_u_mat = mesh(i).gamma_u_mat + 1;
+                mesh(i).gammau_i(mesh(i).gamma_u_mat).u = [0];
+                mesh(i).u_indices = gi;
+                mesh(i).rl = [mesh(i).rl -1];
+                mesh(i).dir = [mesh(i).dir 0];
+            end
+            if nodes(gi,2) == 2
+                % add this to the neumann boundary
+                mesh(i).gamma_mat = mesh(i).gamma_mat + 1;
+                mesh(i).gammat_i(mesh(i).gamma_mat).t = [20E6;0];
+                mesh(i).gammat_i(mesh(i).gamma_mat).ind = [2 3 6];
+                mesh(i).rl = [mesh(i).rl 1];
+                mesh(i).dir = [mesh(i).dir 0];
+            end
+        end
+    end
+end
+
+%{
     mesh = {};
     mesh(1).n_nodes = 21;
     mesh(1).x=[0,1];
@@ -48,5 +100,4 @@ function [mesh,n_global_nodes] = fem_mesh(n)
     mesh(4).gammau_i = {};
     mesh(4).gammau_i(1).u = [0];
     mesh(4).u_indices = mesh(4).global_indices(find(mesh(4).x == 0));
-
-end
+%}

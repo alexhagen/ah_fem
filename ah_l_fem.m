@@ -27,10 +27,7 @@ function [ u_n ] = ah_l_fem(mesh)
         k_el = zeros(n_nodes*2,n_nodes*2);
         f_omega_el = zeros(n_nodes*2,1);
         f_gamma_el = zeros(n_nodes*2,1);
-        hold on;
-        plot(mean(mesh(el).x),mean(mesh(el).y),'kd');
-        %fprintf('element %d center at %4.2f,%4.2f\n',el,mean(mesh(el).x),mean(mesh(el).y));
-        hold on;
+
         % get the local to global mapping
         % get_local_to_global_mapping();
 
