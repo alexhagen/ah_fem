@@ -13,6 +13,10 @@ A Finite Element Code written by Alex Hagen
 
 ## 1. Introduction and Motivation
 
+### Geometry Input
+
+One of the biggest struggles in quick turnaround finite element modeling is the geometry itself.  Notable examples of difficult to use CAD interfaces within commercial FEM/other physics based modeling packages are COMSOL, and MCNP.  To counteract this, I am going to use two open-source and ASCII formats.  For 2-d geometry, `.svg` files will be used.  These files will be stripped down to only lines and fills, which will define where the solid and boundaries are.  For 3-d geometry, `.x3d` files will be used.  These two file formats also make it especially easy to visualize the input (and, I guess, later, the output).
+
 ## 2. Capabilities
 
 ## 3. Usage
@@ -22,7 +26,8 @@ I have strived to make `ah_fem` free from issues with compatibility and easy to 
 ```python
 
 # import a cad file
-block = new geometry('/path/to/file.stl');
+block = new geometry('/path/to/file.svg'); # we use svg files for 2d geometry
+block = new geometry('/path/to/file.x3d'); # we use x3d files for 3d geometry
 
 # define mesh settings
 tetblock = new mesh(geometry=block,generation='no');
@@ -57,7 +62,7 @@ conductivity_problem.solve();
 
 ## 5. To-Do
 
-- [ ] Find a CAD package with ascii output that I can import for the geometry
+- [x] Find a CAD package with ascii output that I can import for the geometry
 - [ ] Write or use a meshing script
 - [ ] Write a class to bring in numbers as strings with units and also significant figures
 - [ ] Write the rest of the FEM codes
