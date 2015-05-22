@@ -1,6 +1,7 @@
 # AH_FEM
 A Finite Element Code written by Alex Hagen
-*this code is incomplete and will be updated as written.  To see a complete but unverified FEM code I've written, look in the branch `matlab_linear` and `matlab_nonlinear`.*
+
+**this code is incomplete and will be updated as written.  To see a complete but unverified FEM code I've written, look in the branch `matlab_linear` and `matlab_nonlinear`.**
 
 ## Outline
 
