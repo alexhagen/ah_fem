@@ -6,7 +6,7 @@
 
 Using your favorite svg editor (mine is Inkscape), create a square with a hole (side length 2, hole radius 0.5) and fill it with black.  Be sure that it is defined as a path and that the hole and square have been combined.  The following gif gives the process for Inkscape.
 
-[!Inkscape 2D Geometry Instructions](img/inkscape.gif)
+![Inkscape 2D Geometry Instructions](img/inkscape.gif)
 
 Save this as a (plain) svg.  The file should look like this:
 
