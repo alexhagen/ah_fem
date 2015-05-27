@@ -15,9 +15,11 @@ A Finite Element Code written by Alex Hagen
 
 ### Geometry Input
 
-One of the biggest struggles in quick turnaround finite element modeling is the geometry itself.  Notable examples of difficult to use CAD interfaces within commercial FEM/other physics based modeling packages are COMSOL, and MCNP.  To counteract this, I am going to use two open-source and ASCII formats.  For 2-d geometry, `.svg` files will be used.  These files will be stripped down to only lines and fills, which will define where the solid and boundaries are.  For 3-d geometry, `.x3d` files will be used.  These two file formats also make it especially easy to visualize the input (and, I guess, later, the output).  
+~~One of the biggest struggles in quick turnaround finite element modeling is the geometry itself.  Notable examples of difficult to use CAD interfaces within commercial FEM/other physics based modeling packages are COMSOL, and MCNP.  To counteract this, I am going to use two open-source and ASCII formats.  For 2-d geometry, `.svg` files will be used.  These files will be stripped down to only lines and fills, which will define where the solid and boundaries are.  For 3-d geometry, `.x3d` files will be used.  These two file formats also make it especially easy to visualize the input (and, I guess, later, the output).~~
 
-From the input of the svg or x3d file, a [`MeshPy`](http://documen.tician.de/meshpy/) compatible python file is created (similar to `tests/brick.py`), and [`MeshPy`](http://documen.tician.de/meshpy/) is used to do the meshing.
+~~From the input of the svg or x3d file, a [`MeshPy`](http://documen.tician.de/meshpy/) compatible python file is created (similar to `tests/brick.py`), and [`MeshPy`](http://documen.tician.de/meshpy/) is used to do the meshing.~~
+
+Look into wrapping gmsh.
 
 ## 2. Capabilities
 
