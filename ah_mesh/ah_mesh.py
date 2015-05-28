@@ -1,5 +1,5 @@
 import numpy as np
-import geo_import as gi
+import geo as gi
 
 class ah_mesh(object):
 	''' our object is either 3d or 2d and will have a definition for what type 

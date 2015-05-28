@@ -1,6 +1,6 @@
-import numpy as np 
+import numpy as np
 
-class geo_import(object):
+class geo(object):
 	def __init__(filename):
 		self.filename = filename;
 		if '.x3d' is in self.filename:
@@ -20,6 +20,8 @@ class geo_import(object):
 		# name some edges (for boundary conditions later);
 		self.points = [];
 		self.edges = {};
+		# iterate through svg structure finding points
+		# iterate through svg structure finding connectivity between points
 	def import_3d():
 		# for 3d meshes, we have points and faces.  we use a dict so that we can
 		# name some faces (for boundary conditions later);
