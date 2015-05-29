@@ -3,20 +3,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 from svg.path import Path, Line, CubicBezier, parse_path
 
-def norm2(arr):
-	''' This function finds the 2-norm of a line which is defined as a list of
-	tuples where arr[0] is the start point tuple of (x,y) and arr[1] is the end
-	point.'''
-	normalized = np.subtract(zip(arr[1]),zip(arr[0]));
-	return np.sqrt(np.sum(np.multiply(normalized,normalized)));
-
-def ddx(arr):
-	''' This function finds the range and value change (rise and run) of a line
-	which is defined as a list of tuples where arr[0] is the start point tuple
-	of (x,y) and arr[1] is the end point.'''
-	normalized = np.subtract(zip(arr[1]),zip(arr[0]));
-	return (normalized[1],normalized[0]);
-
 # set some variables
 scale = 1.0/100.0;
 param = 0.01;
