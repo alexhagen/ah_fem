@@ -1,3 +1,36 @@
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  tex2jax: {
+    inlineMath: [ ['$','$'], ['\\(','\\)'] ],
+  },
+  "HTML-CSS": {
+    linebreaks: { 
+      automatic: true,
+      width: "80% container", 
+    }
+  },
+  SVG: { 
+    linebreaks: { 
+      automatic: true,
+      width: "80% container", 
+    } 
+  },
+  TeX: {
+    equationNumbers: {
+      autoNumber: "all"
+    },
+  },
+    showMathMenu: false
+});
+
+</script>
+
+<script type="text/javascript"
+     src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
 # AH_FEM
 A Finite Element Code written by Alex Hagen
 
@@ -15,11 +48,9 @@ A Finite Element Code written by Alex Hagen
 
 ### Geometry Input
 
-~~One of the biggest struggles in quick turnaround finite element modeling is the geometry itself.  Notable examples of difficult to use CAD interfaces within commercial FEM/other physics based modeling packages are COMSOL, and MCNP.  To counteract this, I am going to use two open-source and ASCII formats.  For 2-d geometry, `.svg` files will be used.  These files will be stripped down to only lines and fills, which will define where the solid and boundaries are.  For 3-d geometry, `.x3d` files will be used.  These two file formats also make it especially easy to visualize the input (and, I guess, later, the output).~~
+One of the biggest struggles in quick turnaround finite element modeling is the geometry itself.  Notable examples of difficult to use CAD interfaces within commercial FEM/other physics based modeling packages are COMSOL, and MCNP.  To counteract this, I am going to use two open-source and ASCII formats.  For 2-d geometry, `.svg` files will be used.  These files will be stripped down to only lines and fills, which will define where the solid and boundaries are.  For 3-d geometry, `.x3d` files will be used.  These two file formats also make it especially easy to visualize the input (and, I guess, later, the output).
 
-~~From the input of the svg or x3d file, a [`MeshPy`](http://documen.tician.de/meshpy/) compatible python file is created (similar to `tests/brick.py`), and [`MeshPy`](http://documen.tician.de/meshpy/) is used to do the meshing.~~
-
-Look into wrapping gmsh.
+For the svg import, I'm taking advantage of the wonderful svg.path library.  This allows for the import of path segments straight into geometry points.  I can also use this library to interpolate along the line, which gives me my ability to change the coarseness of the mesh with the $h$ parameter.  In the future, I hope to be able to change the mesh coarseness along individual lines, not just on one path segement itself.
 
 ## 2. Capabilities
 

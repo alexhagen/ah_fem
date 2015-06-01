@@ -50,35 +50,3 @@ Save this as a (plain) svg.  The file should look like this:
 </svg>
 
 ```
-
-Now we start our fem file, for this case, we'll call it `heat_conduction_2d.py`.  First, we have to make sure that we import our `ah_fem` package (obviously), so start your file with:
-
-```python
-
-import ah_fem as ahf
-
-```
-
-Second, we have to import our geometry, which we'll do simply by constructing a new object:
-
-```python
-
-# import our square with a hole - ahf.geometry can tell whether it's 2d or 3d
-#  by what file type it is, we also scaled our geometry by 100x, so we have to 
-#  define a kwarg scale
-swh = new ahf.geometry('/path/to/file.svg',scale=0.01);
-
-```
-
-Then, we use a wrapper for `MeshPy` called `ahf.mesh` to create a mesh with our defined specifics
-
-```python
-
-# define mesh settings - we want quadrahedral elements in a pretty fine mesh. 
-#  Note that the default unit is 'mm', so if we made something in inkscape that
-#  was 1 pixel wide and had a scale of 1.0, it would be 1 mm wide
-quadswh = new ahf.mesh(geometry=swh,generation='no');
-quadswh.set_type('quad');
-quadswh.set_size('0.1 mm');
-
-```
