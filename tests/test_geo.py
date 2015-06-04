@@ -5,7 +5,7 @@ from svg.path import Path, Line, CubicBezier, parse_path
 
 # set some variables
 scale = 1.0/100.0;
-param = 0.01;
+param = 0.5;
 h = param/scale;
 
 # parse our svg file
