@@ -1,3 +1,4 @@
+# Site settings
 title: Alex Hagen
 repo_title: REPOTITLE
 email: alexhagen@gmail.com
@@ -7,10 +8,9 @@ description: >
   at Purdue University in Nuclear Engineering.  This portfolio
   shows some designs, publications, and open source codes that I've
   created. Feel free to email me if you have any ideas, questions, or 
-  requests. 
+  requests.
 baseurl: "/" # the subpath of your site, e.g. /blog/
-url: "http://alexhagen.github.io" # the base hostname & protocol for 
-  your site
+url: "http://alexhagen.github.io" # the base hostname & protocol for your site
 github_username:  alexhagen
 
 # Build settings
