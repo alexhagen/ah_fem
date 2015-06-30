@@ -10,7 +10,7 @@ description: >
   requests. 
 baseurl: "/" # the subpath of your site, e.g. /blog/
 url: "http://alexhagen.github.io" # the base hostname & protocol for 
-your site
+  your site
 github_username:  alexhagen
 
 # Build settings
