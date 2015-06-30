@@ -1,7 +1,7 @@
-# Site settings
 title: Alex Hagen
-repo_title: ah_fem
+repo_title: REPOTITLE
 email: alexhagen@gmail.com
+permalink: /template/:title.html
 description: > 
   Welcome to my portfolio. I am currently a Ph.D. seeking student
   at Purdue University in Nuclear Engineering.  This portfolio
